@@ -26,7 +26,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/Link",
-    element: <Link />,
+    element: (
+      <PrivateRoute>
+        <Link />
+      </PrivateRoute>
+    ),
   },
 ]);
 

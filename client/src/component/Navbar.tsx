@@ -11,9 +11,17 @@ import { MdHome } from "react-icons/md";
 
 import { RiAdminFill } from "react-icons/ri";
 import { FaLink } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { logoutUser } from "@/helpers/authHelper";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
+  const navigate = useNavigate();
+  function handleLogout() {
+    logoutUser();
+    navigate("/login");
+  }
+
   return (
     <Menubar className="flex justify-center h-14 items-center gap-3 ">
       <MenubarMenu>
@@ -45,7 +53,9 @@ export function Navbar() {
           <MenubarSeparator />
           <MenubarItem inset>View Profile</MenubarItem>
           <MenubarSeparator />
-          <MenubarItem inset>Logout</MenubarItem>
+          <MenubarItem inset>
+            <Button onClick={handleLogout}>Logout</Button>
+          </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>

@@ -19,6 +19,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
@@ -26,7 +37,6 @@ import { Label } from "@/components/ui/label";
 import { isLoggedIn } from "@/helpers/authHelper";
 import React from "react";
 import { BiLoaderAlt } from "react-icons/bi";
-import { link } from "fs";
 
 const extractCompanyName = (url: string) => {
   const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
@@ -119,6 +129,8 @@ const Link = () => {
       console.error("Error updating link:", error);
     }
   };
+
+  const deleteLink = async (title: string) => {};
 
   return (
     <>
@@ -279,13 +291,38 @@ const Link = () => {
                                     </DialogFooter>
                                   </DialogContent>
                                 </Dialog>
-                                <Button
-                                  variant="link"
-                                  className=" text-red-600"
-                                >
-                                  <MdDelete className="h-5 w-5" />
-                                  Delete
-                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="link"
+                                      className=" text-red-600"
+                                      onClick={() => deleteLink(link?.title)}
+                                    >
+                                      <MdDelete className="h-5 w-5" />
+                                      Delete
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Are you absolutely sure?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action cannot be undone. This will
+                                        permanently delete your account and
+                                        remove your data from our servers.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Cancel
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction>
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
                               </div>
                             </div>
                           ))}

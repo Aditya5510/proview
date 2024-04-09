@@ -9,5 +9,6 @@ router.post("/login", userControllers.login);
 router.post("/addLink", verifyToken, userControllers.AddLink);
 router.get("/getLinks", verifyToken, userControllers.GetLinks);
 router.post("/updateLink", verifyToken, userControllers.UpdateLink);
+router.post("/deleteLink", verifyToken, userControllers.DeleteLink);
 
 module.exports = router;

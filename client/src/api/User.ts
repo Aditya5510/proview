@@ -92,4 +92,24 @@ const updatentries = async (user: any, data: any) => {
   }
 };
 
-export { signup, login, AddLink, updateLink1, updatentries };
+const deleteEntry = async (user: any, data: any) => {
+  try {
+    const res = await fetch(BASE_URL + "api/users/deleteLink", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "x-access-token": user.token,
+      },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    // console.log("Response:", json);
+    return json;
+  } catch (err) {
+    // console.error("Error deleting link:", err);
+    throw err; // Rethrow the error to inform the caller of the failure
+  }
+};
+
+export { signup, login, AddLink, updateLink1, updatentries, deleteEntry };

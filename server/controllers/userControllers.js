@@ -126,6 +126,7 @@ const AddLink = async (req, res) => {
       title,
       url,
       description,
+      user: userId,
     });
     user.Links.push(link);
     await user.save();
@@ -161,7 +162,11 @@ const UpdateLink = async (req, res) => {
       throw new Error("User not found");
     }
 
-    const link = await Link.findOne({ title: title });
+    // console.log("user", user);
+    const tobedelete=user.Links.filter(link => link.title === title);
+    // console.log(tobedelete);
+  
+    const link = user.Links.find(link => link.title === title);
     if (!link) {
       throw new Error("Link not found");
     }
@@ -173,6 +178,35 @@ const UpdateLink = async (req, res) => {
     return res.status(200).json({ success: true, link });
 
 
+  }
+  catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+}
+
+
+const DeleteLink = async (req, res) => {
+  try {
+    const { userId, title } = req.body;
+    // console.log(userId, title);
+    const user = await User.findById(userId).populate("Links");
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const link = user.Links.find(link => link.title === title);
+    if (!link) {
+      throw new Error("Link not found");
+    }
+    
+    //remove from user.links array as well
+    const index = user.Links.indexOf(link);
+    user.Links.splice(index, 1);
+    await link.remove();
+    await user.save();
+    console.log(user);
+
+    return res.status(200).json({ success: true });
   }
   catch (err) {
     return res.status(400).json({ error: err.message });
@@ -192,6 +226,7 @@ module.exports = {
   login,
   AddLink,
   GetLinks,
-  UpdateLink
+  UpdateLink,
+  DeleteLink
 }
 

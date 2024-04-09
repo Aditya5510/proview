@@ -1,4 +1,4 @@
-import { AddLink, updateLink1, updatentries } from "@/api/User";
+import { AddLink, deleteEntry, updateLink1, updatentries } from "@/api/User";
 import { Navbar } from "@/component/Navbar";
 import { Button } from "@/components/ui/button";
 import {
@@ -130,7 +130,25 @@ const Link = () => {
     }
   };
 
-  const deleteLink = async (title: string) => {};
+  const deleteLink = async (title: string) => {
+    const user = isLoggedIn();
+    try {
+      setLoad(true);
+      const response = await deleteEntry(user, {
+        title: title,
+      });
+      if (response?.success === true) {
+        alert("Link deleted successfully");
+        // setLinkData(response?.data);
+        setLoad(false);
+      } else {
+        alert("Error deleting link");
+        setLoad(false);
+      }
+    } catch (error) {
+      console.error("Error deleting link:", error);
+    }
+  };
 
   return (
     <>
@@ -296,7 +314,6 @@ const Link = () => {
                                     <Button
                                       variant="link"
                                       className=" text-red-600"
-                                      onClick={() => deleteLink(link?.title)}
                                     >
                                       <MdDelete className="h-5 w-5" />
                                       Delete
@@ -317,9 +334,20 @@ const Link = () => {
                                       <AlertDialogCancel>
                                         Cancel
                                       </AlertDialogCancel>
-                                      <AlertDialogAction>
-                                        Continue
-                                      </AlertDialogAction>
+                                      {load ? (
+                                        <Button>
+                                          <BiLoaderAlt className="animate-spin" />
+                                          Deleting...
+                                        </Button>
+                                      ) : (
+                                        <AlertDialogAction
+                                          onClick={() =>
+                                            deleteLink(link?.title)
+                                          }
+                                        >
+                                          Delete Link
+                                        </AlertDialogAction>
+                                      )}
                                     </AlertDialogFooter>
                                   </AlertDialogContent>
                                 </AlertDialog>

@@ -74,7 +74,7 @@ const updateLink1 = async (user: any) => {
 const updatentries = async (user: any, data: any) => {
   try {
     // console.log("Sending request with data:", data);
-    const res = await fetch(BASE_URL + "api/users/addLink", {
+    const res = await fetch(BASE_URL + "api/users/updateLink", {
       method: "POST",
       headers: {
         Accept: "application/json",

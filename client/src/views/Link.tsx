@@ -92,7 +92,7 @@ const Link = () => {
       }
     }
     fetchData();
-  }, [loading]);
+  }, [loading, load]);
 
   const updatLinknew = async (
     title: string,
@@ -108,7 +108,7 @@ const Link = () => {
         url: url,
         description: description,
       });
-      if (response?.succes === true) {
+      if (response?.success === true) {
         alert("Link updated successfully");
         setLinkData(response?.data);
         setLoad(false);
@@ -237,7 +237,7 @@ const Link = () => {
                                         </Label>
                                         <Input
                                           id="name1"
-                                          value={link?.url}
+                                          // value={link?.url}
                                           className="col-span-3"
                                           defaultValue={link?.url}
                                         />
@@ -251,7 +251,7 @@ const Link = () => {
                                         </Label>
                                         <Input
                                           id="title1"
-                                          value={link?.description}
+                                          // value={link?.description}
                                           className="col-span-3"
                                           defaultValue={link?.description}
                                         />
@@ -265,9 +265,11 @@ const Link = () => {
                                           // type="submit"
                                           onClick={() =>
                                             updatLinknew(
-                                              link?.description,
-                                              link?.url,
-                                              link?.description
+                                              link?.title,
+                                              document.getElementById("name1")
+                                                .value as string,
+                                              document.getElementById("title1")
+                                                .value as string
                                             )
                                           }
                                         >

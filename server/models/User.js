@@ -45,6 +45,10 @@ const UserSchema = new mongoose.Schema(
         ref: "Link",
       },
     ],
+    profile:{
+      type: String,
+      default: "https://www.gravatar.com/avatar/"
+    }
 
   },
 

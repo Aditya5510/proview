@@ -37,6 +37,7 @@ import { Label } from "@/components/ui/label";
 import { isLoggedIn } from "@/helpers/authHelper";
 import React from "react";
 import { BiLoaderAlt } from "react-icons/bi";
+import { useState } from "react";
 
 const extractCompanyName = (url: string) => {
   const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
@@ -55,6 +56,8 @@ const Link = () => {
   const [loading, setLoading] = React.useState(false);
   const [linkData, setLinkData] = React.useState([]);
   const [load, setLoad] = React.useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [image, setImage] = useState(null);
 
   async function postData(e: any) {
     e.preventDefault();
@@ -147,6 +150,55 @@ const Link = () => {
       }
     } catch (error) {
       console.error("Error deleting link:", error);
+    }
+  };
+
+  const handleImageChange = (e: any) => {
+    const file = e.target.files[0];
+    setSelectedImage(file);
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    localStorage.removeItem("image");
+    // Perform any necessary validation or processing before updating the image
+    if (selectedImage) {
+      // Perform image upload or update logic here
+      // console.log("Selected image:", selectedImage);
+      const formData = new FormData();
+      formData.append("key", `${import.meta.env.VITE_IMGBB_API_KEY}`); // Your IMGBB_API_KEY
+      formData.append("image", selectedImage);
+      // console.log(formData);
+
+      formData.append("name", selectedImage.name);
+      // Example expiration time in seconds
+
+      try {
+        // Make the POST request
+        const response = await fetch("https://api.imgbb.com/1/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        // Parse response as JSON
+        const data = await response.json();
+
+        // Check if the upload was successful
+        if (data.status === 200) {
+          console.log("Image uploaded successfully:", data.data.url);
+          // Do something with the uploaded image URLse
+          localStorage.setItem("image", data.data.url);
+        } else {
+          console.error("Image upload failed:", data.error.message);
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error.message);
+      }
+
+      setSelectedImage(null);
+    } else {
+      // console.log("No image selected");
+      alert("No image selected");
     }
   };
 
@@ -370,10 +422,32 @@ const Link = () => {
                       <div className="bg-white shadow-xl rounded-lg py-3">
                         <div className="p-2">
                           <img
-                            className="w-32 h-32 rounded-full mx-auto"
-                            src="https://www.gravatar.com/avatar/2acfb745ecf9d4dccb3364752d17f65f?s=260&d=mp"
-                            alt="John Doe"
+                            className="w-32 h-32 rounded-full mx-auto object-cover"
+                            src={localStorage.getItem("image")}
+                            alt="profile"
                           />
+
+                          <form
+                            className="flex gap-1 justify-center mt-3"
+                            onSubmit={handleSubmit}
+                          >
+                            <label
+                              htmlFor="file"
+                              className="text-center text-black-600 border border-1-black p-[0.5px] rounded-md pr-1 pl-1 cursor-pointer"
+                            >
+                              Upload
+                            </label>
+                            <input
+                              type="file"
+                              className="hidden"
+                              id="file"
+                              name="file"
+                              onChange={handleImageChange}
+                            />
+                            <Button className="h-[25px] w-[70px]" type="submit">
+                              Change
+                            </Button>
+                          </form>
                         </div>
                         <CardContent>
                           <div className="p-2">

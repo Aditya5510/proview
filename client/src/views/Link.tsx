@@ -160,14 +160,7 @@ const Link = () => {
               {" "}
               <div className="flex flex-col gap-4">
                 <div className="grid items-start gap-7">
-                  <div className="flex items-center justify-between px-2">
-                    <div className="grid gap-2">
-                      <h1 className="text-3xl font-semibold">Edit Links</h1>
-                      <p className="text-gray-500">
-                        Add or Remove links from your profile
-                      </p>
-                    </div>
-                  </div>
+                  <div className="flex items-center justify-between px-2"></div>
 
                   <Card>
                     <form onSubmit={postData}>
@@ -226,18 +219,21 @@ const Link = () => {
 
                     <CardContent>
                       <div>
-                        <CardContent>
+                        <div>
                           {linkData?.map((link: any, index: number) => (
                             <div
                               key={index}
-                              className="flex items-center gap-2 p-4 border border-gray-200 rounded-md mb-2 justify-between"
+                              className=" w-full min-w-72 p-3 border border-gray-200 rounded-md   flex flex-col items-center justify-start gap-2  md:flex-row lg:flex-row xl:flex 2xl:flex-row md:justify-between md:items-center mt-1"
                             >
-                              <div className="flex flex-col justify-center">
+                              <div className="flex flex-col justify-start">
                                 <p className="text-lg font-semibold">
                                   {link.title.toUpperCase()}
                                 </p>
-                                <p className="text-gray-500">{link.url}</p>
+                                <p className="text-gray-500 " itemType="link">
+                                  {link.url}
+                                </p>
                               </div>
+
                               <div className="flex gap-2">
                                 <Dialog>
                                   <DialogTrigger asChild>
@@ -354,7 +350,7 @@ const Link = () => {
                               </div>
                             </div>
                           ))}
-                        </CardContent>
+                        </div>
                       </div>
                     </CardContent>
                   </CardHeader>
@@ -368,8 +364,43 @@ const Link = () => {
                   <CardHeader>
                     <CardTitle>Profile</CardTitle>
                     <CardDescription>Profile</CardDescription>
-                    <CardContent></CardContent>
                   </CardHeader>
+                  <CardContent>
+                    <Card className="max-w-md ">
+                      <div className="bg-white shadow-xl rounded-lg py-3">
+                        <div className="p-2">
+                          <img
+                            className="w-32 h-32 rounded-full mx-auto"
+                            src="https://www.gravatar.com/avatar/2acfb745ecf9d4dccb3364752d17f65f?s=260&d=mp"
+                            alt="John Doe"
+                          />
+                        </div>
+                        <CardContent>
+                          <div className="p-2">
+                            <h2 className="text-center text-xl font-bold">
+                              Joh Doe
+                            </h2>
+                            <div></div>
+
+                            <div className="text-center my-3">
+                              <a
+                                className="text-xs  hover:underline hover:text-black-600"
+                                href="mailto:"
+                              >
+                                swaroopaditya545@gmail.com
+                              </a>
+                            </div>
+
+                            <div className="text-center my-3">
+                              <Button variant={"link"}>
+                                Share your Profile
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </div>
+                    </Card>
+                  </CardContent>
                 </Card>
               </div>
             </div>

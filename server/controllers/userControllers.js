@@ -13,6 +13,7 @@ const getUserDict = (token, user) => {
     phone: user.phone,
     state: user.state,
     college: user.college,
+    profile: user.profile,
   };
 };
 
@@ -147,6 +148,9 @@ const GetLinks = (req, res) => {
         if (err) {
           throw new Error("User not found");
         }
+
+
+
         return res.status(200).json(user.Links);
       });
   } catch (err) {
@@ -213,7 +217,21 @@ const DeleteLink = async (req, res) => {
   }
 }
 
-
+const UpdateImage = async (req, res) => {
+  try {
+    const { userId, profile } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    user.profile = profile;
+    await user.save();
+    return res.status(200).json({ success: true });
+  }
+  catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+}
 
 
 
@@ -227,6 +245,7 @@ module.exports = {
   AddLink,
   GetLinks,
   UpdateLink,
-  DeleteLink
+  DeleteLink,
+  UpdateImage
 }
 

@@ -1,4 +1,10 @@
-import { AddLink, deleteEntry, updateLink1, updatentries } from "@/api/User";
+import {
+  AddLink,
+  deleteEntry,
+  updateImage,
+  updateLink1,
+  updatentries,
+} from "@/api/User";
 import { Navbar } from "@/component/Navbar";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +44,7 @@ import { isLoggedIn } from "@/helpers/authHelper";
 import React from "react";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useState } from "react";
+import { UploadIcon } from "@radix-ui/react-icons";
 
 const extractCompanyName = (url: string) => {
   const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
@@ -57,7 +64,8 @@ const Link = () => {
   const [linkData, setLinkData] = React.useState([]);
   const [load, setLoad] = React.useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
+  // const [userData, setUserData] = useState({});
 
   async function postData(e: any) {
     e.preventDefault();
@@ -99,6 +107,7 @@ const Link = () => {
         // console.log("clicked");
         const response = await updateLink1(user);
         // console.log("Response:", response);
+
         setLinkData(response);
       } catch (error) {
         console.error("Error adding link:", error);
@@ -184,10 +193,21 @@ const Link = () => {
         const data = await response.json();
 
         // Check if the upload was successful
-        if (data.status === 200) {
-          console.log("Image uploaded successfully:", data.data.url);
+        if (data?.status === 200) {
+          // console.log("Image uploaded successfully:", data.data.url);
           // Do something with the uploaded image URLse
           localStorage.setItem("image", data.data.url);
+          setImage(data?.data?.url);
+          console.log(image);
+          const res = await updateImage(user, { profile: image });
+          if (res.success === true) {
+            // setImage(res.data.url);
+            // console.log(res);
+            setImage(res?.user?.profile);
+            alert("Image updated successfully");
+          } else {
+            alert("Error updating image");
+          }
         } else {
           console.error("Image upload failed:", data.error.message);
         }
@@ -201,6 +221,7 @@ const Link = () => {
       alert("No image selected");
     }
   };
+  const user = isLoggedIn();
 
   return (
     <>
@@ -374,8 +395,7 @@ const Link = () => {
                                       </AlertDialogTitle>
                                       <AlertDialogDescription>
                                         This action cannot be undone. This will
-                                        permanently delete your account and
-                                        remove your data from our servers.
+                                        permanently delete this link.
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -414,8 +434,8 @@ const Link = () => {
               <div className="flex flex-col gap-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Profile</CardTitle>
-                    <CardDescription>Profile</CardDescription>
+                    <CardTitle>Your Profile</CardTitle>
+                    <CardDescription>{user.username}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Card className="max-w-md ">
@@ -452,16 +472,15 @@ const Link = () => {
                         <CardContent>
                           <div className="p-2">
                             <h2 className="text-center text-xl font-bold">
-                              Joh Doe
+                              {user.username}
                             </h2>
-                            <div></div>
 
                             <div className="text-center my-3">
                               <a
                                 className="text-xs  hover:underline hover:text-black-600"
                                 href="mailto:"
                               >
-                                swaroopaditya545@gmail.com
+                                {user.email}
                               </a>
                             </div>
 

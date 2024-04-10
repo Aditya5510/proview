@@ -112,23 +112,31 @@ const deleteEntry = async (user: any, data: any) => {
   }
 };
 
-const imageUpload = async (data: any) => {
+const updateImage = async (user: any, data: any) => {
   try {
-    const res = await fetch("https://api.imgbb.com/1/upload", {
+    const res = await fetch(BASE_URL + "api/users/updateImage", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        "x-access-token": user.token,
       },
       body: JSON.stringify(data),
     });
     const json = await res.json();
-    // console.log("Response:", json);
     return json;
   } catch (err) {
-    // console.error("Error deleting link:", err);
-    throw err; // Rethrow the error to inform the caller of the failure
+    console.error("Error updating image:", err);
+    throw err;
   }
 };
 
-export { signup, login, AddLink, updateLink1, updatentries, deleteEntry };
+export {
+  signup,
+  login,
+  AddLink,
+  updateLink1,
+  updatentries,
+  deleteEntry,
+  updateImage,
+};

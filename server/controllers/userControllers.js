@@ -219,7 +219,9 @@ const DeleteLink = async (req, res) => {
 
 const UpdateImage = async (req, res) => {
   try {
+
     const { userId, profile } = req.body;
+    console.log(userId, profile);
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");

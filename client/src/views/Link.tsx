@@ -64,7 +64,8 @@ const Link = () => {
   const [linkData, setLinkData] = React.useState([]);
   const [load, setLoad] = React.useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [image, setImage] = useState("");
+  // const [image, setImage] = useState("");
+  const [uploadLoader, setUploadLoader] = useState(false);
   // const [userData, setUserData] = useState({});
 
   async function postData(e: any) {
@@ -117,9 +118,9 @@ const Link = () => {
   }, [loading, load]);
 
   const updatLinknew = async (
-    title: string,
-    url: string,
-    description: string
+    title: any | null,
+    url: any | null,
+    description: any | null
   ) => {
     setLoad(true);
     const user = isLoggedIn();
@@ -169,7 +170,8 @@ const Link = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    localStorage.removeItem("image");
+    setUploadLoader(true);
+    // localStorage.removeItem("image");
     // Perform any necessary validation or processing before updating the image
     if (selectedImage) {
       // Perform image upload or update logic here
@@ -179,7 +181,7 @@ const Link = () => {
       formData.append("image", selectedImage);
       // console.log(formData);
 
-      formData.append("name", selectedImage.name);
+      formData.append("name", selectedImage.name as any);
       // Example expiration time in seconds
 
       try {
@@ -187,37 +189,32 @@ const Link = () => {
         const response = await fetch("https://api.imgbb.com/1/upload", {
           method: "POST",
           body: formData,
-        });
+        }).then(async (res) => {
+          // console.log(res);
+          const data = await res.json();
 
-        // Parse response as JSON
-        const data = await response.json();
+          if (data?.status === 200) {
+            localStorage.setItem("image", data.data.url as any);
 
-        // Check if the upload was successful
-        if (data?.status === 200) {
-          // console.log("Image uploaded successfully:", data.data.url);
-          // Do something with the uploaded image URLse
-          localStorage.setItem("image", data.data.url);
-          setImage(data?.data?.url);
-          console.log(image);
-          const res = await updateImage(user, { profile: image });
-          if (res.success === true) {
-            // setImage(res.data.url);
-            // console.log(res);
-            setImage(res?.user?.profile);
-            alert("Image updated successfully");
-          } else {
-            alert("Error updating image");
+            const res = await updateImage(user, { profile: data?.data?.url });
+            if (res.success === true) {
+              alert("Image updated successfully");
+              setUploadLoader(false);
+            } else {
+              setUploadLoader(false);
+              alert("Error updating image");
+            }
           }
-        } else {
-          console.error("Image upload failed:", data.error.message);
-        }
-      } catch (error) {
+        });
+      } catch (error: any) {
+        setUploadLoader(false);
         console.error("Error uploading image:", error.message);
       }
 
       setSelectedImage(null);
     } else {
       // console.log("No image selected");
+      setUploadLoader(false);
       alert("No image selected");
     }
   };
@@ -366,9 +363,9 @@ const Link = () => {
                                             updatLinknew(
                                               link?.title,
                                               document.getElementById("name1")
-                                                .value as string,
+                                                .value as any,
                                               document.getElementById("title1")
-                                                .value as string
+                                                .value as any
                                             )
                                           }
                                         >
@@ -429,7 +426,7 @@ const Link = () => {
                 </Card>
               </div>
             </div>
-            <div className="hidden md:block col-span-4">
+            <div className="hidden md:block col-span-4 mt-7">
               {" "}
               <div className="flex flex-col gap-4">
                 <Card>
@@ -464,9 +461,18 @@ const Link = () => {
                               name="file"
                               onChange={handleImageChange}
                             />
-                            <Button className="h-[25px] w-[70px]" type="submit">
-                              Change
-                            </Button>
+                            {
+                              <Button
+                                className="h-[25px] w-[70px]"
+                                type="submit"
+                              >
+                                {uploadLoader ? (
+                                  <BiLoaderAlt className="animate-spin" />
+                                ) : (
+                                  "Update"
+                                )}
+                              </Button>
+                            }
                           </form>
                         </div>
                         <CardContent>

@@ -5,7 +5,8 @@ const isLoggedIn = () => {
 };
 const loginUser = (user: string) => {
   localStorage.setItem("user", JSON.stringify(user));
-  localStorage.setItem("image", JSON.stringify(user.profile));
+  localStorage.setItem("image", user?.profile);
+  // console.log("User logged in:", user?.profile);
 };
 
 const logoutUser = () => {

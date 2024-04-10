@@ -230,7 +230,65 @@ const Link = () => {
               {" "}
               <div className="flex flex-col gap-4">
                 <div className="grid items-start gap-7">
-                  <div className="flex items-center justify-between px-2"></div>
+                  <Card className="max-w-md  block sm:hidden">
+                    <div className="bg-white shadow-xl rounded-lg py-3">
+                      <div className="p-2">
+                        <img
+                          className="w-32 h-32 rounded-full mx-auto object-cover"
+                          src={localStorage.getItem("image")}
+                          alt="profile"
+                        />
+
+                        <form
+                          className="flex gap-1 justify-center mt-3"
+                          onSubmit={handleSubmit}
+                        >
+                          <label
+                            htmlFor="file"
+                            className="text-center text-black-600 border border-1-black p-[0.5px] rounded-md pr-1 pl-1 cursor-pointer"
+                          >
+                            Upload
+                          </label>
+                          <input
+                            type="file"
+                            className="hidden"
+                            id="file"
+                            name="file"
+                            onChange={handleImageChange}
+                          />
+                          {
+                            <Button className="h-[25px] w-[70px]" type="submit">
+                              {uploadLoader ? (
+                                <BiLoaderAlt className="animate-spin" />
+                              ) : (
+                                "Update"
+                              )}
+                            </Button>
+                          }
+                        </form>
+                      </div>
+                      <CardContent>
+                        <div className="p-2">
+                          <h2 className="text-center text-xl font-bold">
+                            {user.username}
+                          </h2>
+
+                          <div className="text-center my-3">
+                            <a
+                              className="text-xs  hover:underline hover:text-black-600"
+                              href="mailto:"
+                            >
+                              {user.email}
+                            </a>
+                          </div>
+
+                          <div className="text-center my-3">
+                            <Button variant={"link"}>Share your Profile</Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </div>
+                  </Card>
 
                   <Card>
                     <form onSubmit={postData}>
@@ -362,10 +420,16 @@ const Link = () => {
                                           onClick={() =>
                                             updatLinknew(
                                               link?.title,
-                                              document.getElementById("name1")
-                                                .value as any,
-                                              document.getElementById("title1")
-                                                .value as any
+                                              (
+                                                document.getElementById(
+                                                  "name1"
+                                                ) as any
+                                              ).value as any,
+                                              (
+                                                document.getElementById(
+                                                  "title1"
+                                                ) as any
+                                              ).value as any
                                             )
                                           }
                                         >
@@ -426,7 +490,7 @@ const Link = () => {
                 </Card>
               </div>
             </div>
-            <div className="hidden md:block col-span-4 mt-7">
+            <div className="hidden md:block col-span-4 mt-1">
               {" "}
               <div className="flex flex-col gap-4">
                 <Card>
@@ -434,72 +498,66 @@ const Link = () => {
                     <CardTitle>Your Profile</CardTitle>
                     <CardDescription>{user.username}</CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <Card className="max-w-md ">
-                      <div className="bg-white shadow-xl rounded-lg py-3">
-                        <div className="p-2">
-                          <img
-                            className="w-32 h-32 rounded-full mx-auto object-cover"
-                            src={localStorage.getItem("image")}
-                            alt="profile"
-                          />
 
-                          <form
-                            className="flex gap-1 justify-center mt-3"
-                            onSubmit={handleSubmit}
+                  <Card className="max-w-md ">
+                    <div className="bg-white shadow-xl rounded-lg py-3">
+                      <div className="p-2">
+                        <img
+                          className="w-32 h-32 rounded-full mx-auto object-cover"
+                          src={localStorage.getItem("image")}
+                          alt="profile"
+                        />
+
+                        <form
+                          className="flex gap-1 justify-center mt-3"
+                          onSubmit={handleSubmit}
+                        >
+                          <label
+                            htmlFor="file"
+                            className="text-center text-black-600 border border-1-black p-[0.5px] rounded-md pr-1 pl-1 cursor-pointer"
                           >
-                            <label
-                              htmlFor="file"
-                              className="text-center text-black-600 border border-1-black p-[0.5px] rounded-md pr-1 pl-1 cursor-pointer"
-                            >
-                              Upload
-                            </label>
-                            <input
-                              type="file"
-                              className="hidden"
-                              id="file"
-                              name="file"
-                              onChange={handleImageChange}
-                            />
-                            {
-                              <Button
-                                className="h-[25px] w-[70px]"
-                                type="submit"
-                              >
-                                {uploadLoader ? (
-                                  <BiLoaderAlt className="animate-spin" />
-                                ) : (
-                                  "Update"
-                                )}
-                              </Button>
-                            }
-                          </form>
-                        </div>
-                        <CardContent>
-                          <div className="p-2">
-                            <h2 className="text-center text-xl font-bold">
-                              {user.username}
-                            </h2>
-
-                            <div className="text-center my-3">
-                              <a
-                                className="text-xs  hover:underline hover:text-black-600"
-                                href="mailto:"
-                              >
-                                {user.email}
-                              </a>
-                            </div>
-
-                            <div className="text-center my-3">
-                              <Button variant={"link"}>
-                                Share your Profile
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
+                            Upload
+                          </label>
+                          <input
+                            type="file"
+                            className="hidden"
+                            id="file"
+                            name="file"
+                            onChange={handleImageChange}
+                          />
+                          {
+                            <Button className="h-[25px] w-[70px]" type="submit">
+                              {uploadLoader ? (
+                                <BiLoaderAlt className="animate-spin" />
+                              ) : (
+                                "Update"
+                              )}
+                            </Button>
+                          }
+                        </form>
                       </div>
-                    </Card>
-                  </CardContent>
+                      <CardContent>
+                        <div className="p-2">
+                          <h2 className="text-center text-xl font-bold">
+                            {user.username}
+                          </h2>
+
+                          <div className="text-center my-3">
+                            <a
+                              className="text-xs  hover:underline hover:text-black-600"
+                              href="mailto:"
+                            >
+                              {user.email}
+                            </a>
+                          </div>
+
+                          <div className="text-center my-3">
+                            <Button variant={"link"}>Share your Profile</Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </div>
+                  </Card>
                 </Card>
               </div>
             </div>

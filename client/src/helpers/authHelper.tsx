@@ -3,7 +3,7 @@ const isLoggedIn = () => {
   // console.log("User string from localStorage:", userString);
   return userString ? JSON.parse(userString) : null;
 };
-const loginUser = (user: string) => {
+const loginUser = (user: any) => {
   localStorage.setItem("user", JSON.stringify(user));
   localStorage.setItem("image", user?.profile);
   // console.log("User logged in:", user?.profile);

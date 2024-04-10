@@ -24,17 +24,16 @@ export function Navbar() {
 
   return (
     <Menubar className="flex justify-center h-14 items-center gap-3 ">
-      <MenubarMenu>
-        <MenubarTrigger className="flex items-center gap-1 justify-center cursor-pointer">
-          {" "}
-          <MdHome className="h-6 w-6 " /> Home
-        </MenubarTrigger>
-        <MenubarContent>
-          <MenubarItem>
-            New Tab <MenubarShortcut>⌘T</MenubarShortcut>
-          </MenubarItem>
-        </MenubarContent>
-      </MenubarMenu>
+      <Link to="/">
+        {" "}
+        <MenubarMenu>
+          <MenubarTrigger className="flex items-center gap-1 justify-center cursor-pointer">
+            {" "}
+            <MdHome className="h-6 w-6 " /> Home
+          </MenubarTrigger>
+        </MenubarMenu>
+      </Link>
+
       <Link to="/link">
         <MenubarMenu>
           <div className="cursor-pointer flex gap-1 items-center">
@@ -44,19 +43,7 @@ export function Navbar() {
         </MenubarMenu>
       </Link>
       <MenubarMenu>
-        <MenubarTrigger className="flex justify-center items-center gap-1 cursor-pointer">
-          {" "}
-          <RiAdminFill className="h-6 w-6" />
-          Profile
-        </MenubarTrigger>
-        <MenubarContent>
-          <MenubarSeparator />
-          <MenubarItem inset>View Profile</MenubarItem>
-          <MenubarSeparator />
-          <MenubarItem inset>
-            <Button onClick={handleLogout}>Logout</Button>
-          </MenubarItem>
-        </MenubarContent>
+        <Button onClick={handleLogout}>Logout</Button>
       </MenubarMenu>
     </Menubar>
   );

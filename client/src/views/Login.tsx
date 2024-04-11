@@ -14,10 +14,13 @@ import { login } from "@/api/User";
 import { loginUser } from "@/helpers/authHelper";
 import { useNavigate } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
+import { toast } from "sonner";
+import { BiLoader } from "react-icons/bi";
 
 function Login() {
   const [error, setServerError] = React.useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
 
   const formData = {
     email: "",
@@ -26,6 +29,7 @@ function Login() {
 
   const handleSignup = async () => {
     const emailInput = document.getElementById("email") as HTMLInputElement;
+    setLoading(true);
     const passwordInput = document.getElementById(
       "password"
     ) as HTMLInputElement;
@@ -37,6 +41,8 @@ function Login() {
 
     if (data.error) {
       setServerError(data.error);
+      toast.error(data.error);
+      setLoading(false);
     } else {
       loginUser(data);
       navigate("/");
@@ -66,9 +72,23 @@ function Login() {
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" required type="password" />
             </div>
-            <Button className="w-full" type="submit" onClick={handleSignup}>
-              Login
-            </Button>
+
+            {loading ? (
+              <>
+                <Button disabled className="w-full">
+                  {" "}
+                  <BiLoader className="animate-spin" />
+                  ..loading
+                </Button>
+              </>
+            ) : (
+              <>
+                {" "}
+                <Button className="w-full" type="submit" onClick={handleSignup}>
+                  Login
+                </Button>
+              </>
+            )}
           </div>
           <div className="w-full ">
             Don't have an account?{" "}

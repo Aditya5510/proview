@@ -29,7 +29,7 @@ This project is a web application which allows users to create a customizable la
 
 1. Clone the repository:
 
-git clone https://github.com/your-username/linktree-clone.git
+git clone https://github.com/your-username/proview.git
 
 
 2. Navigate to the project directory:

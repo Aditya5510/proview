@@ -7,6 +7,7 @@ import {
 } from "@/api/User";
 import { Navbar } from "@/component/Navbar";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import {
   Dialog,
   DialogContent,
@@ -44,7 +45,7 @@ import { isLoggedIn } from "@/helpers/authHelper";
 import React from "react";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useState } from "react";
-import { UploadIcon } from "@radix-ui/react-icons";
+import { toast } from "sonner";
 
 const extractCompanyName = (url: string) => {
   const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
@@ -80,24 +81,26 @@ const Link = () => {
     const cname = extractCompanyName(url as string);
     // console.log(title, url, cname);
     const user = isLoggedIn();
-    try {
-      const response = await AddLink(user, {
+    // try {
+    // const request = ;
+
+    toast.promise(
+      AddLink(user, {
         title: cname,
         url: url,
         description: title,
-      });
-
-      if (response?.succes === true) {
-        setLoading(false);
-        alert("Link added successfully");
-        e.target.reset();
-      } else if (response.error === "Link already exists") {
-        setLoading(false);
-        alert("Link already exists");
+      }),
+      {
+        loading: "Adding Link!",
+        error: (e) => {
+          return "Unable to add link";
+        },
+        success: "Successfully Added Link",
+        finally: () => {
+          setLoading(false);
+        },
       }
-    } catch (error) {
-      console.error("Error adding link:", error);
-    }
+    );
   }
 
   React.useEffect(() => {
@@ -125,6 +128,7 @@ const Link = () => {
     setLoad(true);
     const user = isLoggedIn();
     // console.log(title, url, description);
+
     try {
       const response = await updatentries(user, {
         title: title,
@@ -132,7 +136,10 @@ const Link = () => {
         description: description,
       });
       if (response?.success === true) {
-        alert("Link updated successfully");
+        toast.success("Link updated successfully", {
+          duration: 5000,
+        });
+
         setLinkData(response?.data);
         setLoad(false);
       } else {
@@ -151,7 +158,9 @@ const Link = () => {
         title: title,
       });
       if (response?.success === true) {
-        alert("Link deleted successfully");
+        toast.success("Link deleted successfully", {
+          duration: 5000,
+        });
         // setLinkData(response?.data);
         setLoad(false);
       } else {
@@ -198,7 +207,9 @@ const Link = () => {
 
             const res = await updateImage(user, { profile: data?.data?.url });
             if (res.success === true) {
-              alert("Image updated successfully");
+              toast.success("Profile changed", {
+                duration: 5000,
+              });
               setUploadLoader(false);
             } else {
               setUploadLoader(false);

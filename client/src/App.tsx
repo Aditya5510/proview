@@ -7,6 +7,8 @@ import Signup from "./views/Signup";
 import PrivateRoute from "./helpers/PrivateRoute";
 import Link from "./views/Link";
 
+import { Toaster } from "@/components/ui/sonner";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -38,6 +40,7 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
+      <Toaster />
     </>
   );
 }

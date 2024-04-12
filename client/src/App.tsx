@@ -34,6 +34,10 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
+  {
+    path: "/data/:id",
+    element: <DashBoard />,
+  },
 ]);
 
 function App() {

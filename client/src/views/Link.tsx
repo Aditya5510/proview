@@ -7,7 +7,6 @@ import {
 } from "@/api/User";
 import { Navbar } from "@/component/Navbar";
 import { Button } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/sonner";
 import {
   Dialog,
   DialogContent,
@@ -224,9 +223,9 @@ const Link = () => {
 
       setSelectedImage(null);
     } else {
-      // console.log("No image selected");
       setUploadLoader(false);
-      alert("No image selected");
+
+      toast.error("No image selected");
     }
   };
   const user = isLoggedIn();
@@ -338,6 +337,7 @@ const Link = () => {
                             <Button
                               type="submit"
                               className="flex items-center gap-2"
+                              disabled
                             >
                               <BiLoaderAlt className="animate-spin" />
                               Adding...
@@ -537,7 +537,11 @@ const Link = () => {
                             onChange={handleImageChange}
                           />
                           {
-                            <Button className="h-[25px] w-[70px]" type="submit">
+                            <Button
+                              className="h-[25px] w-[70px]"
+                              type="submit"
+                              disabled={uploadLoader}
+                            >
                               {uploadLoader ? (
                                 <BiLoaderAlt className="animate-spin" />
                               ) : (

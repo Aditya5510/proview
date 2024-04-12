@@ -131,6 +131,21 @@ const updateImage = async (user: any, data: any) => {
   }
 };
 
+const getLinks = (id: string) => {
+  // console.log(id);
+  return fetch(BASE_URL + `api/users/getLinks/${id}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .catch((err) => console.log(err));
+};
+
 export {
   signup,
   login,
@@ -139,4 +154,5 @@ export {
   updatentries,
   deleteEntry,
   updateImage,
+  getLinks,
 };

@@ -7,10 +7,20 @@ import DEP from "../config";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BiLoader } from "react-icons/bi";
 
+interface UserDetails {
+  Links: {
+    _id: string;
+    url: string;
+    title: string;
+  }[];
+}
+
 const DashBoard = () => {
   const user = isLoggedIn();
   let id = useParams();
-  const [userDetails, setUserDetails] = React.useState({});
+  const [userDetails, setUserDetails] = React.useState<UserDetails | null>(
+    null
+  );
   const [load, setLoad] = React.useState(false);
 
   let extractedId;
@@ -68,11 +78,11 @@ const DashBoard = () => {
                 </>
               ) : (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">
-                  {userDetails?.Links?.map((link) => (
+                  {((userDetails?.Links ?? []) as any)?.map((link: any) => (
                     <LinkCard
-                      key={link._id}
-                      link={link.url}
-                      title={link.title}
+                      key={link?._id}
+                      link={link?.url}
+                      title={link?.title}
                     />
                   ))}
                 </div>

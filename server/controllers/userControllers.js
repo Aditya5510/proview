@@ -236,6 +236,27 @@ const UpdateImage = async (req, res) => {
 }
 
 
+const getLinks =(req,res)=>{
+try{
+  const {userId} = req.params;
+  console.log(userId);
+  User.findById(userId)
+  .populate("Links")
+  .exec((err,user)=>{
+    if(err){
+      throw new Error("User not found");
+    }
+    return res.status(200).json(user);
+  });
+}
+
+catch(err){
+  return res.status(400).json({error:err.message});
+}
+}
+
+
+
 
 
 
@@ -248,6 +269,7 @@ module.exports = {
   GetLinks,
   UpdateLink,
   DeleteLink,
-  UpdateImage
+  UpdateImage,
+  getLinks
 }
 

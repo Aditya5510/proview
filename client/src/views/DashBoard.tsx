@@ -4,7 +4,7 @@ import { isLoggedIn } from "@/helpers/authHelper";
 import React from "react";
 import { useParams } from "react-router-dom";
 import DEP from "../config";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { BiLoader } from "react-icons/bi";
 
 interface UserDetails {
@@ -67,7 +67,7 @@ const DashBoard = () => {
                 <ProfileCard
                   email={user.email}
                   name={user.username}
-                  imageUrl={user.profile}
+                  imageUrl={localStorage.getItem("image")}
                 />
               </div>
               {load ? (

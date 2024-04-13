@@ -48,6 +48,14 @@ const UserSchema = new mongoose.Schema(
     profile:{
       type: String,
       default: "https://www.gravatar.com/avatar/"
+    },
+    colour:{
+      type: String,
+      default: "#000000"
+    },
+    cover:{
+      type: String,
+      default: "https://unsplash.com/photos/1Jtj5wv3l3Q/download?force=true&w=1920"
     }
 
   },

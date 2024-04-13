@@ -11,6 +11,7 @@ router.get("/getLinks", verifyToken, userControllers.GetLinks);
 router.post("/updateLink", verifyToken, userControllers.UpdateLink);
 router.post("/deleteLink", verifyToken, userControllers.DeleteLink);
 router.post("/updateImage", verifyToken, userControllers.UpdateImage);
+router.get("/getLinks/:userId", userControllers.getLinks);
 
 
 

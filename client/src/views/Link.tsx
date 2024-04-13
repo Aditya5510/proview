@@ -45,6 +45,15 @@ import React from "react";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const extractCompanyName = (url: string) => {
   const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
@@ -573,6 +582,85 @@ const Link = () => {
                       </CardContent>
                     </div>
                   </Card>
+                </Card>
+              </div>
+              <div className="flex flex-col gap-4 mt-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="underline">
+                      Main page Settings
+                    </CardTitle>
+                  </CardHeader>
+
+                  <div className="bg-white shadow-xl rounded-lg py-3">
+                    <h2 className="ml-3 font-bold">Cover Image</h2>
+                    <div className="p-2">
+                      <img
+                        className="w-full h-full rounded mx-auto object-fill"
+                        src={localStorage.getItem("image")}
+                        alt="profile"
+                      />
+
+                      <form
+                        className="flex gap-1 justify-center mt-3"
+                        onSubmit={handleSubmit}
+                      >
+                        <label
+                          htmlFor="file"
+                          className="text-center text-black-600 border border-1-black p-[0.5px] rounded-md pr-1 pl-1 cursor-pointer"
+                        >
+                          Upload
+                        </label>
+                        <input
+                          type="file"
+                          className="hidden"
+                          id="file"
+                          name="file"
+                          onChange={handleImageChange}
+                        />
+                        {
+                          <Button
+                            className="h-[25px] w-[70px]"
+                            type="submit"
+                            disabled={uploadLoader}
+                          >
+                            {uploadLoader ? (
+                              <BiLoaderAlt className="animate-spin" />
+                            ) : (
+                              "Update"
+                            )}
+                          </Button>
+                        }
+                      </form>
+                    </div>
+                    <div className="border border-x-2">
+                      <CardContent>
+                        <h2 className="font-semibold mb-3">
+                          Select Cover colour
+                        </h2>
+
+                        <Select>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a colour" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Fruits</SelectLabel>
+                              <SelectItem value="red">red</SelectItem>
+                              <SelectItem value="blue">blue</SelectItem>
+                              <SelectItem value="green">green</SelectItem>
+                              <SelectItem value="yellow">yellow</SelectItem>
+                              <SelectItem value="black">black</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </CardContent>
+                      <CardFooter>
+                        {" "}
+                        {/* <Button onClick={()=>{changeColour()}}>Submit</Button> */}
+                      </CardFooter>
+                    </div>
+                  </div>
                 </Card>
               </div>
             </div>

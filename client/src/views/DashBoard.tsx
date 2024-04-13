@@ -62,7 +62,7 @@ const DashBoard = () => {
               }}
             ></div>
             {/* Overlay text */}
-            <div className="absolute  text-white text-4xl font-bold text-center">
+            <div className="absolute  text-white text-1xl font-bold text-center">
               <div>
                 <ProfileCard
                   email={user.email}
@@ -98,17 +98,21 @@ const DashBoard = () => {
 const ProfileCard = ({ name, email, imageUrl }) => {
   return (
     <div className="bg-black shadow-md rounded-lg min-w-60 p-2">
-      <img src={imageUrl} alt="Profile" className="w-24 h-24  mx-auto mb-2" />
-      <h3 className="font-semibold text-center mb-1">{name}</h3>
-      <p className="text-sm text-slate-800 mb-2 ">{email}</p>
+      <img
+        src={imageUrl}
+        alt="Profile"
+        className="w-16 h-16  mx-auto mb-2 rounded-lg"
+      />
+      <h3 className="font-semibold text-3xl">{name}</h3>
+      <p className="text-sm text-slate-800 mb-1 ">{email}</p>
     </div>
   );
 };
 
 const LinkCard = ({ link, title }) => {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-1 w-full max-w-[40vh] h-auto">
-      <h4 className=" text-black text-[25px]  font-semibold ">
+    <div className="bg-white rounded-lg shadow-lg p-1 w-full max-w-[40vh] ">
+      <h4 className=" text-black text-[20px]  font-semibold ">
         {title.toUpperCase()}
       </h4>
       <a href={link} className="text-blue-400 text-sm hover:underline">

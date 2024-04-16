@@ -1,6 +1,7 @@
 import {
   AddLink,
   deleteEntry,
+  updateColor,
   updateImage,
   updateLink1,
   updatentries,
@@ -54,6 +55,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Console } from "console";
 
 const extractCompanyName = (url: string) => {
   const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
@@ -75,6 +77,8 @@ const Link = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   // const [image, setImage] = useState("");
   const [uploadLoader, setUploadLoader] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [colorUploadLoader, setcolorUploadLoader] = useState(false);
   // const [userData, setUserData] = useState({});
 
   async function postData(e: any) {
@@ -238,6 +242,28 @@ const Link = () => {
     }
   };
   const user = isLoggedIn();
+  const handleSubmit1 = async () => {
+    setcolorUploadLoader(true);
+    // console.log("Selected color:", selectedColor);
+    // Here you can perform further actions with the selected color
+    const data = {
+      color: selectedColor,
+    };
+
+    try {
+      await updateColor(user, data).then((data) => {
+        toast.success("color added ", {
+          duration: 1000,
+        });
+        setcolorUploadLoader(false);
+      });
+    } catch (err) {}
+  };
+
+  const handleColorChange = (e) => {
+    const color = e.target.value;
+    setSelectedColor(color);
+  };
 
   return (
     <>
@@ -634,31 +660,33 @@ const Link = () => {
                       </form>
                     </div>
                     <div className="border border-x-2">
-                      <CardContent>
-                        <h2 className="font-semibold mb-3">
-                          Select Cover colour
+                      <div className="flex flex-col items-center mt-8">
+                        <h2 className="text-lg font-semibold mb-4">
+                          Select Cover Colour
                         </h2>
-
-                        <Select>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a colour" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Fruits</SelectLabel>
-                              <SelectItem value="red">red</SelectItem>
-                              <SelectItem value="blue">blue</SelectItem>
-                              <SelectItem value="green">green</SelectItem>
-                              <SelectItem value="yellow">yellow</SelectItem>
-                              <SelectItem value="black">black</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </CardContent>
-                      <CardFooter>
-                        {" "}
-                        {/* <Button onClick={()=>{changeColour()}}>Submit</Button> */}
-                      </CardFooter>
+                        <div className="flex">
+                          <select
+                            className="px-4 py-2 border border-black rounded-md mb-4 focus:outline-none focus:border-black"
+                            value={selectedColor}
+                            onChange={handleColorChange}
+                          >
+                            <option value="">Select a colour</option>
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="green">Green</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="black">Black</option>
+                          </select>
+                        </div>
+                        <CardFooter>
+                          <Button
+                            onClick={handleSubmit1}
+                            className="px-4 py-2 bg-black text-white rounded-md hover:bg-black transition duration-300"
+                          >
+                            Submit
+                          </Button>
+                        </CardFooter>
+                      </div>
                     </div>
                   </div>
                 </Card>

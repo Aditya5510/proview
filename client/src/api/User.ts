@@ -146,6 +146,25 @@ const getLinks = (id: string) => {
     .catch((err) => console.log(err));
 };
 
+const updateColor = async (user: any, data: any) => {
+  try {
+    const res = await fetch(BASE_URL + "api/users/updateColor", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "x-access-token": user.token,
+      },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    return json;
+  } catch (err) {
+    console.error("Error updating image:", err);
+    throw err;
+  }
+};
+
 export {
   signup,
   login,
@@ -155,4 +174,5 @@ export {
   deleteEntry,
   updateImage,
   getLinks,
+  updateColor,
 };

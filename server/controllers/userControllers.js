@@ -14,6 +14,7 @@ const getUserDict = (token, user) => {
     state: user.state,
     college: user.college,
     profile: user.profile,
+    
   };
 };
 
@@ -255,6 +256,22 @@ catch(err){
 }
 }
 
+const UpdateColor = async (req, res) => {
+  try {
+    const { userId, color} = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    user.colour = color;
+    await user.save();
+    return res.status(200).json({ success: true });
+  }
+  catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+}
+
 
 
 
@@ -270,6 +287,7 @@ module.exports = {
   UpdateLink,
   DeleteLink,
   UpdateImage,
-  getLinks
+  getLinks,
+  UpdateColor 
 }
 

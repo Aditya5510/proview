@@ -8,6 +8,7 @@ import DEP from "../config";
 import { BiLoader } from "react-icons/bi";
 
 interface UserDetails {
+  colour: string;
   Links: {
     _id: string;
     url: string;
@@ -68,6 +69,7 @@ const DashBoard = () => {
                   email={user.email}
                   name={user.username}
                   imageUrl={localStorage.getItem("image")}
+                  color={userDetails?.colour}
                 />
               </div>
               {load ? (
@@ -95,9 +97,10 @@ const DashBoard = () => {
   );
 };
 
-const ProfileCard = ({ name, email, imageUrl }) => {
+const ProfileCard = ({ name, email, imageUrl, color }) => {
+  // console.log(color);
   return (
-    <div className="bg-black shadow-md rounded-lg min-w-60 p-2">
+    <div className={`bg-[${color}] shadow-md rounded-lg min-w-60 p-2`}>
       <img
         src={imageUrl}
         alt="Profile"

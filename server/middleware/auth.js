@@ -21,19 +21,6 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// const optionallyVerifyToken = (req, res, next) => {
-//   try {
-//     const token = req.headers["x-access-token"];
 
-//     if (!token) return next();
-
-//     const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-//     req.body.userId = decoded.userId;
-
-//     next();
-//   } catch (err) {
-//     return next();
-//   }
-// };
 
 module.exports = { verifyToken };

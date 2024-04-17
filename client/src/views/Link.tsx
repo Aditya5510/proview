@@ -674,7 +674,7 @@ const handleSubmit2 = async (e: any) => {
                     <div className="p-2">
                       <img
                         className="w-full h-full rounded mx-auto object-fill"
-                        src={localStorage.getItem("image")}
+                        src={localStorage.getItem("cover")}
                         alt="profile"
                       />
 

@@ -4,6 +4,14 @@
 
 This project is a web application which allows users to create a customizable landing page with multiple links to various destinations. It utilizes MongoDB, Express.js, Node.js, and Vite for server-side and client-side development.
 
+## Running Using Docker
+
+Install `docker` and `docker-compose` and in the project root folder run the following command
+```
+sudo docker-compose up
+```
+This will run the client at `http://localhost:5173` and the node.js backend server `http://localhost:4000`
+
 ## Features
 
 - **Share Page**: A sharable landing page containing all the user's links.

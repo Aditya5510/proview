@@ -272,6 +272,23 @@ const UpdateColor = async (req, res) => {
   }
 }
 
+const UpdateCover = async (req, res) => {
+  try {
+    const { userId, cover} = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    user.cover = cover;
+    await user.save();
+    return res.status(200).json({ success: true });
+  }
+  catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+}
+
+
 
 
 
@@ -288,6 +305,7 @@ module.exports = {
   DeleteLink,
   UpdateImage,
   getLinks,
-  UpdateColor 
+  UpdateColor,
+  UpdateCover
 }
 

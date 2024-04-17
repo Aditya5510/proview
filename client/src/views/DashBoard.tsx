@@ -52,13 +52,13 @@ const DashBoard = () => {
       {extractedId === user.userId ? <Navbar /> : null}
       <div className="flex justify-center">
         <div className="w-full max-w-[100vw]">
-          <div className="relative w-full bg-cover bg-center min-h-screen flex items-center justify-center">
+          <div className="relative w-full bg-fixed bg-center min-h-screen flex items-center justify-center">
             {/* Background image with blur */}
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
                 backgroundImage:
-                  "url('https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg')",
+                  `url(${localStorage.getItem("cover")})`,
                 filter: "blur(10px)",
               }}
             ></div>
@@ -100,7 +100,7 @@ const DashBoard = () => {
 const ProfileCard = ({ name, email, imageUrl, color }) => {
   // console.log(color);
   return (
-    <div className={`bg-[${color}] shadow-md rounded-lg min-w-60 p-2`}>
+    <div className={`shadow-md rounded-lg min-w-60 p-2`} style={{backgroundColor:color}}>
       <img
         src={imageUrl}
         alt="Profile"
@@ -114,7 +114,7 @@ const ProfileCard = ({ name, email, imageUrl, color }) => {
 
 const LinkCard = ({ link, title }) => {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-1 w-full max-w-[40vh] ">
+    <div className="bg-white rounded-lg shadow-lg p-1 w-full max-w-[40vh] text-wrap ">
       <h4 className=" text-black text-[20px]  font-semibold ">
         {title.toUpperCase()}
       </h4>

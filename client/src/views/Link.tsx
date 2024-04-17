@@ -3,6 +3,7 @@ import {
   deleteEntry,
   updateColor,
   updateImage,
+  updateImage1,
   updateLink1,
   updatentries,
 } from "@/api/User";
@@ -188,6 +189,56 @@ const Link = () => {
     const file = e.target.files[0];
     setSelectedImage(file);
   };
+
+const handleSubmit2 = async (e: any) => {
+  e.preventDefault();
+  if (selectedImage) {
+
+    const formData = new FormData();
+    formData.append("key", `${import.meta.env.VITE_IMGBB_API_KEY}`); 
+    formData.append("image", selectedImage);
+    formData.append("name", selectedImage.name as any);
+  
+
+    try {
+      // Make the POST request
+      const response = await fetch("https://api.imgbb.com/1/upload", {
+        method: "POST",
+        body: formData,
+      }).then(async (res) => {
+        // console.log(res);
+        const data = await res.json();
+
+        if (data?.status === 200) {
+          localStorage.setItem("cover", data.data.url as any);
+
+          const res = await updateImage1(user, {cover :data?.data?.url });
+          if (res.success === true) {
+            toast.success("cover image changed", {
+              duration: 5000,
+            });
+            
+          } else {
+         
+            alert("Error updating image");
+          }
+        }
+      });
+    } catch (error: any) {
+    
+      console.error("Error uploading image:", error.message);
+    }
+
+    setSelectedImage(null);
+  } else {
+    setUploadLoader(false);
+
+    toast.error("No image selected");
+  }
+  
+}
+
+
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -629,7 +680,7 @@ const Link = () => {
 
                       <form
                         className="flex gap-1 justify-center mt-3"
-                        onSubmit={handleSubmit}
+                        onSubmit={handleSubmit2}
                       >
                         <label
                           htmlFor="file"

@@ -13,6 +13,7 @@ router.post("/deleteLink", verifyToken, userControllers.DeleteLink);
 router.post("/updateImage", verifyToken, userControllers.UpdateImage);
 router.get("/getLinks/:userId", userControllers.getLinks);
 router.post("/updateColor", verifyToken, userControllers.UpdateColor );
+router.post("/updateImage2", verifyToken, userControllers.UpdateCover );
 
 
 

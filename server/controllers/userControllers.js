@@ -14,6 +14,7 @@ const getUserDict = (token, user) => {
     state: user.state,
     college: user.college,
     profile: user.profile,
+    cover: user.cover,
     
   };
 };
@@ -222,7 +223,7 @@ const UpdateImage = async (req, res) => {
   try {
 
     const { userId, profile } = req.body;
-    console.log(userId, profile);
+    // console.log(userId, profile);
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -274,7 +275,9 @@ const UpdateColor = async (req, res) => {
 
 const UpdateCover = async (req, res) => {
   try {
+  
     const { userId, cover} = req.body;
+    // console.log( cover);
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");

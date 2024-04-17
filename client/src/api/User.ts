@@ -167,7 +167,8 @@ const updateColor = async (user: any, data: any) => {
 
 const updateImage1 = async (user: any, data: any) => {
   try {
-    const res = await fetch(BASE_URL + "api/users/updateImage", {
+    // console.log("Sending request with data:", data);
+    const res = await fetch(BASE_URL + "api/users/updateImage2", {
       method: "POST",
       headers: {
         Accept: "application/json",

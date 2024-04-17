@@ -15,6 +15,9 @@ services:
       - 4000:4000
     networks:
       - mynetwork
+    depends_on:
+      - mongodb
+    restart: always
 
   client:
     build: ./client

@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+.glassmorphism {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* For Safari */
+  background-color: rgba(255, 255, 255, 0.2); /* Adjust opacity as needed */
+}

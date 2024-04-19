@@ -448,9 +448,9 @@ const handleSubmit2 = async (e: any) => {
                           {linkData?.map((link: any, index: number) => (
                             <div
                               key={index}
-                              className=" w-full min-w-72 p-3 border border-gray-200 rounded-md   flex flex-col items-center justify-start gap-2  md:flex-row lg:flex-row xl:flex 2xl:flex-row md:justify-between md:items-center mt-1"
+                              className=" w-full min-w-56 p-3 border border-gray-200 rounded-md   flex flex-col items-center justify-start gap-5  md:flex-row lg:flex-row xl:flex 2xl:flex-row md:justify-between md:items-center mt-1"
                             >
-                              <div className="flex flex-col justify-start">
+                              <div className="flex flex-col justify-start text-wrap w-[70%]">
                                 <p className="text-lg font-semibold">
                                   {link.title.toUpperCase()}
                                 </p>

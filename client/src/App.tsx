@@ -8,6 +8,7 @@ import PrivateRoute from "./helpers/PrivateRoute";
 import Link from "./views/Link";
 
 import { Toaster } from "@/components/ui/sonner";
+import Profile from "./views/Profile";
 
 const router = createBrowserRouter([
   {
@@ -36,8 +37,9 @@ const router = createBrowserRouter([
   },
   {
     path: "/data/:id",
-    element: <DashBoard />,
+    element: <Profile />,
   },
+
 ]);
 
 function App() {

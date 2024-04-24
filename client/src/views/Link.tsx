@@ -437,24 +437,21 @@ const handleSubmit2 = async (e: any) => {
                   </Card>
                 </div>
 
-                <Card>
+                <div className="p-1 border border-red-200 shadow-lg rounded-lg">  
                   <CardHeader>
                     <CardTitle>Your Links</CardTitle>
-                    <CardDescription>links</CardDescription>
-
-                    <CardContent>
-                      <div>
+                    <CardDescription>links</CardDescription>                  
                         <div>
                           {linkData?.map((link: any, index: number) => (
                             <div
                               key={index}
-                              className=" w-full min-w-56 p-3 border border-gray-200 rounded-md   flex flex-col items-center justify-start gap-5  md:flex-row lg:flex-row xl:flex 2xl:flex-row md:justify-between md:items-center mt-1"
+                              className=" min-w-56 pt-6 pb-6 pl-2 pr-2 border border-gray-200 rounded-md  flex-col  justify-center md:flex-row lg:flex-row xl:flex 2xl:flex-row md:justify-between md:items-center mt-1"
                             >
-                              <div className="flex flex-col justify-start text-wrap w-[70%]">
-                                <p className="text-lg font-semibold">
+                              <div className="flex flex-col justify-start text-wrap w-[70%] border-b-clack">
+                                <p className="text-lg font-semibold p-2">
                                   {link.title.toUpperCase()}
                                 </p>
-                                <p className="text-gray-500 " itemType="link">
+                                <p className="text-gray-500 p-2 text-wrap" itemType="link">
                                   {link.url}
                                 </p>
                               </div>
@@ -581,10 +578,10 @@ const handleSubmit2 = async (e: any) => {
                             </div>
                           ))}
                         </div>
-                      </div>
-                    </CardContent>
+                   
+                 
                   </CardHeader>
-                </Card>
+                </div>
               </div>
             </div>
             <div className="hidden md:block col-span-4 mt-1">

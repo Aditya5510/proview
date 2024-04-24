@@ -4,7 +4,12 @@ import { isLoggedIn } from "@/helpers/authHelper";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { BiLoader, BiShare } from "react-icons/bi";
-import {FacebookIcon, FacebookShareButton, WhatsappIcon, WhatsappShareButton} from "react-share"
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 // import { Title } from "@radix-ui/react-dialog";
 
@@ -17,14 +22,10 @@ interface UserDetails {
   }[];
 }
 
-
-
-const data=[
-  {Button:FacebookShareButton, Icon:FacebookIcon,Title:"Facebook"},
-  { Button:WhatsappShareButton,Icon:WhatsappIcon,Title:"Whatsapp"}
-]
-
-
+const data = [
+  { Button: FacebookShareButton, Icon: FacebookIcon, Title: "Facebook" },
+  { Button: WhatsappShareButton, Icon: WhatsappIcon, Title: "Whatsapp" },
+];
 
 const DashBoard = () => {
   const user = isLoggedIn();
@@ -50,7 +51,7 @@ const DashBoard = () => {
     <>
       <Navbar />
       <div
-        className="min-h-screen bg-fixed bg-cover bg-blur overflow-y-auto glassmorphism" 
+        className="min-h-screen bg-fixed bg-cover bg-blur overflow-y-auto glassmorphism"
         style={{
           backgroundImage: `url(${localStorage.getItem("cover")})`,
         }}
@@ -95,47 +96,44 @@ const DashBoard = () => {
   );
 };
 
-
-const ProfileCard = ({ name, email, imageUrl, color,shareLink }) => {
+const ProfileCard = ({ name, email, imageUrl, color, shareLink }) => {
   return (
-    <div className={`shadow-lg rounded-lg p-4 relative gap-2 flex flex-col mb-9 bg-opacity-25 backdrop-filter backdrop-blur-md backdrop-filter bg-${color}-400 bg-opacity-50 border border-${color}-500`}>
+    <div
+      className={`shadow-lg rounded-lg p-4 relative gap-2 flex flex-col mb-9 bg-opacity-25 backdrop-filter backdrop-blur-md backdrop-filter bg-${color}-400 bg-opacity-50 border border-${color}-500`}
+    >
       <img
         src={imageUrl}
         alt="Profile"
-        className="w-60 h-60 mx-auto rounded-lg"
+        className="w-60 h-60 mx-auto rounded-full object-cover border-4 border-white shadow-lg"
       />
       <h3 className="font-semibold text-3xl text-white">{name}</h3>
       <p className="text-sm text-white mb-1">{email}</p>
-      <div className="absolute mt-2 ">
-      <Dialog>
-        <DialogTrigger className="bg-black p-3 rounded-lg"> <BiShare/></DialogTrigger>
-        <DialogContent>
-        <div className="flex gap-3">
-{
-  data.map((val,index)=>
-  
- 
-    <div key={index} className="flex-col gap-2 items-center justify-center">
-    <val.Button url={shareLink}>
-      <val.Icon/>
-    </val.Button>
-    <p>{val.Title}</p>
-
-    </div>
- 
-  
-  )
-}
-</div>
-
-
-        </DialogContent>
-      </Dialog>
+      <div className="absolute mb-1 ">
+        <Dialog>
+          <DialogTrigger className="bg-black p-3 rounded-lg">
+            {" "}
+            <BiShare />
+          </DialogTrigger>
+          <DialogContent>
+            <div className="flex gap-3">
+              {data.map((val, index) => (
+                <div
+                  key={index}
+                  className="flex-col gap-2 items-center justify-center"
+                >
+                  <val.Button url={shareLink}>
+                    <val.Icon />
+                  </val.Button>
+                  <p>{val.Title}</p>
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
 };
-
 
 const LinkCard = ({ link, title }) => {
   return (
@@ -143,12 +141,14 @@ const LinkCard = ({ link, title }) => {
       <h4 className="text-black text-[20px] font-semibold hover:text-blue-500">
         {title.toUpperCase()}
       </h4>
-      <a href={link} className="text-black text-sm hover:text-blue-600 hover:underline">
+      <a
+        href={link}
+        className="text-black text-sm hover:text-blue-600 hover:underline"
+      >
         {link}
       </a>
     </div>
   );
 };
-
 
 export default DashBoard;

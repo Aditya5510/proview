@@ -47,16 +47,7 @@ import React from "react";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Console } from "console";
+
 
 const extractCompanyName = (url: string) => {
   const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;

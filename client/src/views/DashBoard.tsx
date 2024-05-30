@@ -64,7 +64,7 @@ const DashBoard = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-black opacity-60"></div>
               <div className="absolute inset-0 flex flex-col justify-center items-center pt-20">
-                <div className="text-white text-center mt-[29rem]">
+                <div className="text-white text-center mt-[35rem]">
                   <div>
                     <ProfileCard
                       email={user.email}

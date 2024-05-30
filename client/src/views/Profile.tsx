@@ -63,8 +63,8 @@ const Profile = () => {
             <div className="text-white text-center mt-[0rem] max-w-screen-lg mx-auto">
                   <div>
                     <ProfileCard
-                      email={user.email}
-                      name={user.username}
+                      email={user?.email}
+                      name={user?.username}
                       imageUrl={localStorage.getItem("image")}
                       color={userDetails?.colour}
                     

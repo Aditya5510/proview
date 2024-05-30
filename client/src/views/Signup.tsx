@@ -66,8 +66,8 @@ function Signup() {
   };
 
   return (
-    <div className="w-[100vw] h-[100vh] ">
-      <Card className="mx-auto max-w-sm align-middle mt-6 shadow-lg">
+    <div className="w-[100vw] h-[100vh] flex justify-center items-center">
+      <Card className=" align-middle mt-6 shadow-lg min-w-[30vw]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">SignUp</CardTitle>
           <CardDescription>
@@ -130,11 +130,11 @@ function Signup() {
             </Button>
           </div>
         </CardContent>
-        <CardFooter>
+        {/* <CardFooter>
           <Button className="w-full flex gap-1 items-center">
             <FaGoogle /> Google
           </Button>
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </div>
   );

@@ -50,8 +50,8 @@ function Login() {
   };
 
   return (
-    <div className="w-[100vw] h-[100vh] ">
-      <Card className="mx-auto max-w-sm align-middle mt-6 shadow-lg">
+    <div className="w-[100vw] h-[100vh] flex justify-center items-center">
+    <Card className=" align-middle mt-6 shadow-lg min-w-[30vw]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>Login to your account</CardDescription>
@@ -78,7 +78,7 @@ function Login() {
                 <Button disabled className="w-full">
                   {" "}
                   <BiLoader className="animate-spin" />
-                  ..loading
+                loading
                 </Button>
               </>
             ) : (
@@ -103,11 +103,11 @@ function Login() {
             </Button>
           </div>
         </CardContent>
-        <CardFooter className=" border-t-lime-200">
+        {/* <CardFooter className=" border-t-lime-200">
           <Button className="w-full flex gap-1 items-center">
             <FaGoogle /> Google
           </Button>
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </div>
   );

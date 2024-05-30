@@ -76,7 +76,7 @@ const DashBoard = () => {
                   </div>
                   {load ? (
                     <div className="flex flex-col space-y-3">
-                      <BiLoader className="animate-spin h-10 w-10 mx-auto text-white" />
+                      <BiLoader className="animate-spin h-8 w-8 mx-auto text-black" />
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4 mb-3">
@@ -121,7 +121,7 @@ const ProfileCard = ({ name, email, imageUrl, color, shareLink }) => {
 
 const LinkCard = ({ link, title }) => {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-1 w-full max-w-[40vh] text-wrap transition duration-300 ease-in-out transform hover:scale-105">
+    <div className="bg-white rounded-lg shadow-lg p-3 w-full max-w-[40vh] text-wrap transition duration-300 ease-in-out transform hover:scale-105">
       <h4 className="text-black text-[20px] font-semibold hover:text-blue-500">
         {title.toUpperCase()}
       </h4>

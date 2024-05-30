@@ -55,7 +55,7 @@ const UserSchema = new mongoose.Schema(
     },
     cover:{
       type: String,
-      default: "https://unsplash.com/photos/1Jtj5wv3l3Q/download?force=true&w=1920"
+      default: "https://media.istockphoto.com/id/938484386/vector/abstract-blue-gradient-background.jpg?s=612x612&w=0&k=20&c=F5lRq6NW_24AZHR1mTI0_gfkoacLu1gycs_TRZhvzr8="
     }
 
   },

@@ -428,23 +428,24 @@ const handleSubmit2 = async (e: any) => {
                   </Card>
                 </div>
 
-                <div className="p-1 border border-red-200 shadow-lg rounded-lg">  
+                <div className="p-1 border border-black-200 shadow-lg rounded-lg">  
                   <CardHeader>
                     <CardTitle>Your Links</CardTitle>
                     <CardDescription>links</CardDescription>                  
                         <div>
                           {linkData?.map((link: any, index: number) => (
-                            <div
-                              key={index}
-                              className=" min-w-56 pt-6 pb-6 pl-2 pr-2 border border-gray-200 rounded-md  flex-col  justify-center md:flex-row lg:flex-row xl:flex 2xl:flex-row md:justify-between md:items-center mt-1"
-                            >
-                              <div className="flex flex-col justify-start text-wrap w-[70%] border-b-clack">
-                                <p className="text-lg font-semibold p-2">
-                                  {link.title.toUpperCase()}
-                                </p>
-                                <p className="text-gray-500 p-2 text-wrap" itemType="link">
-                                  {link.url}
-                                </p>
+                    <div
+                    key={index}
+                    className="min-w-60 p-4 border border-gray-200 rounded-md flex-col justify-center md:flex-row lg:flex-row xl:flex 2xl:flex-row md:justify-between md:items-center mt-1"
+                    style={{ boxSizing: 'border-box' }}
+                  >
+                    <div className="flex flex-col justify-start text-wrap w-full">
+                      <p className="text-lg font-semibold p-2">
+                        {link.title.toUpperCase()}
+                      </p>
+                      <p className="text-gray-500 p-2 break-words" itemType="link">
+                        {link.url}
+                      </p>
                               </div>
 
                               <div className="flex gap-2">
@@ -577,14 +578,14 @@ const handleSubmit2 = async (e: any) => {
             </div>
             <div className="hidden md:block col-span-4 mt-1">
               {" "}
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col ">
                 <Card>
                   <CardHeader>
                     <CardTitle>Your Profile</CardTitle>
                     <CardDescription>{user.username}</CardDescription>
                   </CardHeader>
 
-                  <Card className="max-w-md ">
+                  <Card className="max-w-lg ">
                     <div className="bg-white shadow-xl rounded-lg py-3">
                       <div className="p-2">
                         <img
@@ -652,7 +653,7 @@ const handleSubmit2 = async (e: any) => {
               <div className="flex flex-col gap-4 mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="underline">
+                    <CardTitle >
                       Main page Settings
                     </CardTitle>
                   </CardHeader>

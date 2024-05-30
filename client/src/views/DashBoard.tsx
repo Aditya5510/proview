@@ -7,6 +7,8 @@ import { BiLoader, BiShare } from "react-icons/bi";
 import {
   FacebookIcon,
   FacebookShareButton,
+  InstapaperIcon,
+  InstapaperShareButton,
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
@@ -25,6 +27,7 @@ interface UserDetails {
 const data = [
   { Button: FacebookShareButton, Icon: FacebookIcon, Title: "Facebook" },
   { Button: WhatsappShareButton, Icon: WhatsappIcon, Title: "Whatsapp" },
+  {Button:InstapaperShareButton,Icon:InstapaperIcon,Title:"Instapaper"}
 ];
 
 const DashBoard = () => {
@@ -99,7 +102,7 @@ const DashBoard = () => {
 const ProfileCard = ({ name, email, imageUrl, color, shareLink }) => {
   return (
     <div
-      className={`shadow-lg rounded-lg p-4 relative gap-2 flex flex-col mb-9 bg-opacity-25 backdrop-filter backdrop-blur-md backdrop-filter bg-${color}-400 bg-opacity-50 border border-${color}-500`}
+      className={`min-w-[30vw] min-h-[auto] shadow-lg rounded-lg p-4 relative gap-2 flex flex-col mb-9 bg-opacity-25 backdrop-filter backdrop-blur-md backdrop-filter bg-${color}-400 bg-opacity-50 border border-${color}-500`}
     >
       <img
         src={imageUrl}
@@ -108,9 +111,9 @@ const ProfileCard = ({ name, email, imageUrl, color, shareLink }) => {
       />
       <h3 className="font-semibold text-3xl text-white">{name}</h3>
       <p className="text-sm text-white mb-1">{email}</p>
-      <div className="absolute mb-1 ">
+      <div className="absolute mb-1 ml-1 ">
         <Dialog>
-          <DialogTrigger className="bg-black p-3 rounded-lg">
+          <DialogTrigger className="bg-black p-2 rounded-md">
             {" "}
             <BiShare />
           </DialogTrigger>

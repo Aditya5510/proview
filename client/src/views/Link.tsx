@@ -47,6 +47,8 @@ import React from "react";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useState } from "react";
 import { toast } from "sonner";
+import { FacebookIcon, FacebookShareButton, InstapaperIcon, InstapaperShareButton, WhatsappIcon, WhatsappShareButton } from "react-share";
+import { DialogComponent } from "./DashBoard";
 
 
 const extractCompanyName = (url: string) => {
@@ -61,6 +63,11 @@ const extractCompanyName = (url: string) => {
   }
   return "";
 };
+const data1 = [
+  { Button: FacebookShareButton, Icon: FacebookIcon, Title: "Facebook" },
+  { Button: WhatsappShareButton, Icon: WhatsappIcon, Title: "Whatsapp" },
+  {Button:InstapaperShareButton,Icon:InstapaperIcon,Title:"Instapaper"}
+];
 
 const Link = () => {
   const [loading, setLoading] = React.useState(false);
@@ -306,6 +313,10 @@ const handleSubmit2 = async (e: any) => {
     const color = e.target.value;
     setSelectedColor(color);
   };
+
+
+  const share_link = `https://proview-six.vercel.app/data/${user?.userId}`;
+
 
   return (
     <>
@@ -642,7 +653,8 @@ const handleSubmit2 = async (e: any) => {
                           </div>
 
                           <div className="text-center my-3">
-                            <Button variant={"link"}>Share your Profile</Button>
+                            {/* <Button variant={"link"}>Share your Profile</Button> */}
+                            <DialogComponent data={data1} shareLink={share_link} text="share your profile"/>
                           </div>
                         </div>
                       </CardContent>

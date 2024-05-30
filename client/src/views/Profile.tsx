@@ -107,8 +107,8 @@ const ProfileCard = ({ name, email, imageUrl, color }) => {
         alt="Profile"
         className="w-60 h-60 mx-auto rounded-full object-cover border-4 border-white shadow-lg"
       />
-      <h3 className="font-semibold text-3xl text-white">{name}</h3>
-      <p className="text-sm text-white mb-1">{email}</p>
+         <h3 className="font-semibold text-3xl text-black">{name}</h3>
+      <p className="text-sm text-black mb-1">{email}</p>
    
     </div>
   );

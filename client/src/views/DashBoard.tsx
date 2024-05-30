@@ -109,30 +109,11 @@ const ProfileCard = ({ name, email, imageUrl, color, shareLink }) => {
         alt="Profile"
         className="w-60 h-60 mx-auto rounded-full object-cover border-4 border-white shadow-lg"
       />
-      <h3 className="font-semibold text-3xl text-white">{name}</h3>
-      <p className="text-sm text-white mb-1">{email}</p>
+      <h3 className="font-semibold text-3xl text-black">{name}</h3>
+      <p className="text-sm text-black mb-1">{email}</p>
       <div className="absolute mb-1 ml-1 ">
-        <Dialog>
-          <DialogTrigger className="bg-black p-2 rounded-md">
-            {" "}
-            <BiShare />
-          </DialogTrigger>
-          <DialogContent>
-            <div className="flex gap-3">
-              {data.map((val, index) => (
-                <div
-                  key={index}
-                  className="flex-col gap-2 items-center justify-center"
-                >
-                  <val.Button url={shareLink}>
-                    <val.Icon />
-                  </val.Button>
-                  <p>{val.Title}</p>
-                </div>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
+        
+        <DialogComponent data={data} shareLink={shareLink} text=""/>
       </div>
     </div>
   );
@@ -153,5 +134,33 @@ const LinkCard = ({ link, title }) => {
     </div>
   );
 };
+
+export const  DialogComponent = ({ data, shareLink,text}) => {
+  return (
+    <Dialog>
+      <DialogTrigger className="rounded-md">
+        
+   {!text ?<BiShare className="bg-black text-white h-6 w-6 p-1 rounded-md"/> : <p className="underline">{text}</p>} 
+      </DialogTrigger>
+      <DialogContent>
+        <div className="flex gap-3">
+          {data.map((val, index) => (
+            <div
+              key={index}
+              className="flex-col gap-2 items-center justify-center"
+            >
+              <val.Button url={shareLink}>
+                <val.Icon />
+              </val.Button>
+              <p>{val.Title}</p>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+
 
 export default DashBoard;

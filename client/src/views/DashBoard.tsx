@@ -29,12 +29,9 @@ const data = [
   { Button: WhatsappShareButton, Icon: WhatsappIcon, Title: "Whatsapp" },
   {Button:InstapaperShareButton,Icon:InstapaperIcon,Title:"Instapaper"}
 ];
-
 const DashBoard = () => {
   const user = isLoggedIn();
-  const [userDetails, setUserDetails] = React.useState<UserDetails | null>(
-    null
-  );
+  const [userDetails, setUserDetails] = React.useState<UserDetails | null>(null);
   const [load, setLoad] = React.useState(false);
 
   React.useEffect(() => {
@@ -53,44 +50,32 @@ const DashBoard = () => {
   return (
     <>
       <Navbar />
-      <div
-        className="min-h-screen bg-fixed bg-cover bg-blur overflow-y-auto glassmorphism"
-        style={{
-          backgroundImage: `url(${localStorage.getItem("cover")})`,
-        }}
-      >
-        <div className="flex justify-center items-center">
-          <div className="w-full max-w-[100vw]">
-            <div className="relative">
-              <div className="absolute inset-0 bg-black opacity-60"></div>
-              <div className="absolute inset-0 flex flex-col justify-center items-center pt-20">
-                <div className="text-white text-center mt-[35rem]">
-                  <div>
-                    <ProfileCard
-                      email={user.email}
-                      name={user.username}
-                      imageUrl={localStorage.getItem("image")}
-                      color={userDetails?.colour}
-                      shareLink={share_link}
-                    />
-                  </div>
-                  {load ? (
-                    <div className="flex flex-col space-y-3">
-                      <BiLoader className="animate-spin h-8 w-8 mx-auto text-black" />
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4 mb-3">
-                      {((userDetails?.Links ?? []) as any)?.map((link: any) => (
-                        <LinkCard
-                          key={link?._id}
-                          link={link?.url}
-                          title={link?.title}
-                        />
-                      ))}
-                    </div>
-                  )}
+      <div className="min-h-screen bg-fixed bg-cover bg-blur overflow-y-auto glassmorphism" style={{ backgroundImage: `url(${localStorage.getItem("cover")})` }}>
+        <div className="relative">
+          <div className="flex flex-col justify-center items-center pt-20">
+            <div className="text-white text-center mt-[0rem] max-w-screen-lg mx-auto">
+              <ProfileCard
+                email={user.email}
+                name={user.username}
+                imageUrl={localStorage.getItem("image")}
+                color={userDetails?.colour}
+                shareLink={share_link}
+              />
+              {load ? (
+                <div className="flex flex-col space-y-3">
+                  <BiLoader className="animate-spin h-8 w-8 mx-auto text-black" />
                 </div>
-              </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4 mb-3">
+                  {((userDetails?.Links ?? []) as any)?.map((link: any) => (
+                    <LinkCard
+                      key={link?._id}
+                      link={link?.url}
+                      title={link?.title}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -99,11 +84,12 @@ const DashBoard = () => {
   );
 };
 
+
+
 const ProfileCard = ({ name, email, imageUrl, color, shareLink }) => {
   return (
-    <div
-      className={`min-w-[30vw] min-h-[auto] shadow-lg rounded-lg p-4 relative gap-2 flex flex-col mb-9 bg-opacity-25 backdrop-filter backdrop-blur-md backdrop-filter bg-${color}-400 bg-opacity-50 border border-${color}-500`}
-    >
+   <div className="min-w-[30vw] min-h-[auto] shadow-lg rounded-lg p-4 relative gap-2 flex flex-col mb-9 bg-opacity-25 backdrop-filter backdrop-blur-md backdrop-filter bg-${color}-400 bg-opacity-50 border border-${color}-500  ">
+
       <img
         src={imageUrl}
         alt="Profile"
@@ -137,6 +123,7 @@ const LinkCard = ({ link, title }) => {
 
 export const  DialogComponent = ({ data, shareLink,text}) => {
   return (
+    <div className="flex flex-wrap gap-3">
     <Dialog>
       <DialogTrigger className="rounded-md">
         
@@ -158,6 +145,7 @@ export const  DialogComponent = ({ data, shareLink,text}) => {
         </div>
       </DialogContent>
     </Dialog>
+    </div>
   );
 };
 

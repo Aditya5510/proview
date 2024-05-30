@@ -74,3 +74,15 @@
       @apply bg-background text-foreground;
     }
   }
+
+  /* Example CSS */
+:root {
+  --link-card-height: 100px; /* Adjust this value based on the height of your link cards */
+  --link-card-gap: 20px; /* Adjust this value based on the gap between your link cards */
+}
+
+/* Additional CSS for link cards */
+.link-card {
+  height: var(--link-card-height);
+  margin-bottom: var(--link-card-gap);
+}

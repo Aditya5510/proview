@@ -40,6 +40,8 @@ const Profile = () => {
       getLinks(extractedId).then((data) => {
         setUserDetails(data);
         // console.log(data);
+        localStorage.setItem("cover", data.cover);
+        localStorage.setItem("image", data.profile);
         setLoad(false);
       });
     };

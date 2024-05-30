@@ -57,12 +57,10 @@ const Profile = () => {
           backgroundImage: `url(${localStorage.getItem("cover")})`,
         }}
       >
-        <div className="flex justify-center items-center">
-          <div className="w-full max-w-[100vw]">
-            <div className="relative">
-              <div className="absolute inset-0 bg-black opacity-60"></div>
-              <div className="absolute inset-0 flex flex-col justify-center items-center pt-20">
-                <div className="text-white text-center mt-[30rem]">
+         <div className="min-h-screen bg-fixed bg-cover bg-blur overflow-y-auto glassmorphism" style={{ backgroundImage: `url(${localStorage.getItem("cover")})` }}>
+        <div className="relative">
+          <div className="flex flex-col justify-center items-center pt-20">
+            <div className="text-white text-center mt-[0rem] max-w-screen-lg mx-auto">
                   <div>
                     <ProfileCard
                       email={user.email}
@@ -92,7 +90,7 @@ const Profile = () => {
             </div>
           </div>
         </div>
-      </div>
+  
     </>
   );
 };

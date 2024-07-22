@@ -340,13 +340,26 @@ const Link = () => {
                             </div>
                             <DialogFooter>
                               <Button
-                                onClick={() =>
-                                  updatLinknew(
-                                    link?.title,
-                                    document.getElementById("edit-url").value,
-                                    document.getElementById("edit-title").value
-                                  )
-                                }
+                                onClick={() => {
+                                  const urlInput = document.getElementById(
+                                    "edit-url"
+                                  ) as HTMLInputElement;
+                                  const titleInput = document.getElementById(
+                                    "edit-title"
+                                  ) as HTMLInputElement;
+
+                                  if (urlInput && titleInput) {
+                                    updatLinknew(
+                                      link?.title,
+                                      urlInput.value,
+                                      titleInput.value
+                                    );
+                                  } else {
+                                    toast.error(
+                                      "Error: Input fields not found"
+                                    );
+                                  }
+                                }}
                                 disabled={load}
                               >
                                 {load ? "Updating..." : "Save changes"}

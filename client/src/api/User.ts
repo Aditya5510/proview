@@ -34,7 +34,7 @@ const login = async (user: any) => {
 };
 const AddLink = async (user: any, data: any) => {
   try {
-    console.log("Sending request with data:", data);
+    // console.log("Sending request with data:", data);
     const res = await fetch(BASE_URL + "api/users/addLink", {
       method: "POST",
       headers: {
@@ -185,10 +185,6 @@ const updateImage1 = async (user: any, data: any) => {
   }
 };
 
-
-
-
-
 export {
   signup,
   login,
@@ -199,5 +195,5 @@ export {
   updateImage,
   getLinks,
   updateColor,
-  updateImage1
+  updateImage1,
 };

@@ -1,10 +1,10 @@
+import { motion } from "framer-motion";
 import {
-  CardTitle,
+  Card,
+  CardContent,
   CardDescription,
   CardHeader,
-  CardContent,
-  Card,
-  CardFooter,
+  CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,6 @@ import React from "react";
 import { signup } from "@/api/User";
 import { loginUser } from "@/helpers/authHelper";
 import { useNavigate } from "react-router-dom";
-import { FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
 import { BiLoader } from "react-icons/bi";
 
@@ -47,13 +46,12 @@ function Signup() {
     const confirmPassword = confirmPasswordInput.value;
 
     if (formData.password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
+      setLoading(false);
       return;
     }
-    // console.log(formData);
 
     const data = await signup(formData);
-    // console.log(data);
 
     if (data.error) {
       setServerError(data.error);
@@ -66,76 +64,113 @@ function Signup() {
   };
 
   return (
-    <div className="w-[100vw] h-[100vh] flex justify-center items-center">
-      <Card className=" align-middle mt-6 shadow-lg min-w-[30vw]">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">SignUp</CardTitle>
-          <CardDescription>
-            Enter the Details to create a new account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+    <div className="w-screen h-screen flex justify-center items-center bg-gradient-to-br from-gray-900 to-gray-800">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="w-96 bg-white shadow-2xl">
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-3xl font-bold tracking-tight">
+              Sign Up
+            </CardTitle>
+            <CardDescription className="text-gray-500">
+              Create a new account
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="Username">Username</Label>
+              <Label
+                htmlFor="Username"
+                className="text-sm font-medium text-gray-700"
+              >
+                Username
+              </Label>
               <Input
                 id="Username"
                 name="Username"
-                placeholder="Aditya"
+                placeholder="johndoe"
                 required
                 type="text"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
+              >
+                Email
+              </Label>
               <Input
                 id="email"
                 name="email"
-                placeholder="m@example.com"
+                placeholder="john@example.com"
                 required
                 type="email"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" required type="password" />
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
+                Password
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                required
+                type="password"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cpassword">Confirm Password</Label>
-              <Input id="cpassword" name="cpassword" required type="password" />
+              <Label
+                htmlFor="cpassword"
+                className="text-sm font-medium text-gray-700"
+              >
+                Confirm Password
+              </Label>
+              <Input
+                id="cpassword"
+                name="cpassword"
+                required
+                type="password"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+              />
             </div>
-
-            {loading ? (
-              <Button disabled className="w-full">
-                {" "}
-                <BiLoader className="animate-spin" />
-                ..loading
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              {loading ? (
+                <Button disabled className="w-full bg-gray-800 text-white">
+                  <BiLoader className="animate-spin mr-2" />
+                  Loading
+                </Button>
+              ) : (
+                <Button
+                  className="w-full bg-gray-800 text-white hover:bg-gray-700"
+                  type="submit"
+                  onClick={handleSignup}
+                >
+                  Sign Up
+                </Button>
+              )}
+            </motion.div>
+            <p className="text-sm text-center text-gray-600">
+              Already have an account?{" "}
+              <Button
+                variant="link"
+                className="p-0 text-gray-800 hover:text-gray-600"
+                onClick={() => navigate("/Login")}
+              >
+                Log in
               </Button>
-            ) : (
-              <Button className="w-full" type="submit" onClick={handleSignup}>
-                Signup
-              </Button>
-            )}
-          </div>
-          <div className="w-full ">
-            Don't have an account?{" "}
-            <Button
-              variant="link"
-              className={"p-0"}
-              onClick={() => {
-                navigate("/Login");
-              }}
-            >
-              Login
-            </Button>
-          </div>
-        </CardContent>
-        {/* <CardFooter>
-          <Button className="w-full flex gap-1 items-center">
-            <FaGoogle /> Google
-          </Button>
-        </CardFooter> */}
-      </Card>
+            </p>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }

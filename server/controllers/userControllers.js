@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Link = require("../models/Link");
 
-
 const getUserDict = (token, user) => {
   return {
     token,
@@ -15,7 +14,6 @@ const getUserDict = (token, user) => {
     college: user.college,
     profile: user.profile,
     cover: user.cover,
-    
   };
 };
 
@@ -25,14 +23,9 @@ const buildToken = (user) => {
   };
 };
 
-
 const register = async (req, res) => {
   try {
-    const {
-      username,
-      email,
-      password,
-    } = req.body;
+    const { username, email, password } = req.body;
     if (!(username && email && password)) {
       throw new Error("All input required");
     }
@@ -90,8 +83,6 @@ const login = async (req, res) => {
 
     console.log(user);
     return res.json(getUserDict(token, user));
-
-
   } catch (err) {
     console.log(err);
     return res.status(400).json({ error: err.message });
@@ -103,15 +94,12 @@ const AddLink = async (req, res) => {
     const { userId, title, url, description } = req.body;
     // console.log(userId, title, url, description);
 
-    const user = await User.findById(userId).populate(
-      "Links"
-    );
+    const user = await User.findById(userId).populate("Links");
     if (!user) {
       throw new Error("User not found");
     }
 
     console.log(user.Links);
-
 
     for (const link of user.Links) {
       if (link.url === url) {
@@ -121,7 +109,7 @@ const AddLink = async (req, res) => {
 
     for (const link of user.Links) {
       if (link.title === title) {
-        throw new Error("Profile already exists")
+        throw new Error("Profile already exists");
       }
     }
 
@@ -151,14 +139,12 @@ const GetLinks = (req, res) => {
           throw new Error("User not found");
         }
 
-
-
         return res.status(200).json(user.Links);
       });
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }
-}
+};
 
 const UpdateLink = async (req, res) => {
   try {
@@ -169,10 +155,10 @@ const UpdateLink = async (req, res) => {
     }
 
     // console.log("user", user);
-    const tobedelete=user.Links.filter(link => link.title === title);
+    const tobedelete = user.Links.filter((link) => link.title === title);
     // console.log(tobedelete);
-  
-    const link = user.Links.find(link => link.title === title);
+
+    const link = user.Links.find((link) => link.title === title);
     if (!link) {
       throw new Error("Link not found");
     }
@@ -182,14 +168,10 @@ const UpdateLink = async (req, res) => {
     link.description = description;
     await link.save();
     return res.status(200).json({ success: true, link });
-
-
-  }
-  catch (err) {
+  } catch (err) {
     return res.status(400).json({ error: err.message });
   }
-}
-
+};
 
 const DeleteLink = async (req, res) => {
   try {
@@ -200,11 +182,11 @@ const DeleteLink = async (req, res) => {
       throw new Error("User not found");
     }
 
-    const link = user.Links.find(link => link.title === title);
+    const link = user.Links.find((link) => link.title === title);
     if (!link) {
       throw new Error("Link not found");
     }
-    
+
     //remove from user.links array as well
     const index = user.Links.indexOf(link);
     user.Links.splice(index, 1);
@@ -213,15 +195,13 @@ const DeleteLink = async (req, res) => {
     console.log(user);
 
     return res.status(200).json({ success: true });
-  }
-  catch (err) {
+  } catch (err) {
     return res.status(400).json({ error: err.message });
   }
-}
+};
 
 const UpdateImage = async (req, res) => {
   try {
-
     const { userId, profile } = req.body;
     // console.log(userId, profile);
     const user = await User.findById(userId);
@@ -231,35 +211,31 @@ const UpdateImage = async (req, res) => {
     user.profile = profile;
     await user.save();
     return res.status(200).json({ success: true });
-  }
-  catch (err) {
+  } catch (err) {
     return res.status(400).json({ error: err.message });
   }
-}
+};
 
-
-const getLinks =(req,res)=>{
-try{
-  const {userId} = req.params;
-  console.log(userId);
-  User.findById(userId)
-  .populate("Links")
-  .exec((err,user)=>{
-    if(err){
-      throw new Error("User not found");
-    }
-    return res.status(200).json(user);
-  });
-}
-
-catch(err){
-  return res.status(400).json({error:err.message});
-}
-}
+const getLinks = (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log(userId);
+    User.findById(userId)
+      .populate("Links")
+      .exec((err, user) => {
+        if (err) {
+          throw new Error("User not found");
+        }
+        return res.status(200).json(user);
+      });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
 
 const UpdateColor = async (req, res) => {
   try {
-    const { userId, color} = req.body;
+    const { userId, color } = req.body;
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -267,16 +243,14 @@ const UpdateColor = async (req, res) => {
     user.colour = color;
     await user.save();
     return res.status(200).json({ success: true });
-  }
-  catch (err) {
+  } catch (err) {
     return res.status(400).json({ error: err.message });
   }
-}
+};
 
 const UpdateCover = async (req, res) => {
   try {
-  
-    const { userId, cover} = req.body;
+    const { userId, cover } = req.body;
     // console.log( cover);
     const user = await User.findById(userId);
     if (!user) {
@@ -285,19 +259,10 @@ const UpdateCover = async (req, res) => {
     user.cover = cover;
     await user.save();
     return res.status(200).json({ success: true });
-  }
-  catch (err) {
+  } catch (err) {
     return res.status(400).json({ error: err.message });
   }
-}
-
-
-
-
-
-
-
-
+};
 
 module.exports = {
   register,
@@ -309,6 +274,5 @@ module.exports = {
   UpdateImage,
   getLinks,
   UpdateColor,
-  UpdateCover
-}
-
+  UpdateCover,
+};

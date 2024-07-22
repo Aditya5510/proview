@@ -219,7 +219,7 @@ const Link = () => {
     }
   };
 
-  const share_link = `https://proview-six.vercel.app/data/${user?.userId}`;
+  const share_link = `https://proview-7pk6.vercel.app/data/${user?.userId}`;
 
   return (
     <motion.div

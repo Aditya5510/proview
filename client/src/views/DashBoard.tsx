@@ -48,7 +48,7 @@ const DashBoard = () => {
     getallLinks();
   }, []);
 
-  const share_link = `https://proview-six.vercel.app/data/${user?.userId}`;
+  const share_link = `https://proview-7pk6.vercel.app/data/${user?.userId}`;
 
   return (
     <>

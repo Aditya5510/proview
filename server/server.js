@@ -27,7 +27,7 @@ httpServer.listen(process.env.PORT || 5000, () => {
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://proview-six.vercel.app"],
+    origin: ["http://localhost:5173", "https://proview-7pk6.vercel.app"],
     credentials: true,
   })
 );

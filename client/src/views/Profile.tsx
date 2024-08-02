@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, ExternalLink } from "lucide-react";
 import { getLinks } from "@/api/User";
 import { isLoggedIn } from "@/helpers/authHelper";
@@ -28,17 +28,9 @@ const Profile = () => {
     fetchLinks();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 overflow-y-auto">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-20">
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -48,67 +40,78 @@ const Profile = () => {
             name={user?.username}
             email={user?.email}
             imageUrl={localStorage.getItem("image")}
-            coverUrl={localStorage.getItem("cover")}
+            color={userDetails?.colour}
           />
         </motion.div>
 
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12"
-        >
-          {userDetails?.Links?.map((link, index) => (
-            <LinkCard
-              key={link._id}
-              link={link.url}
-              title={link.title}
-              index={index}
-            />
-          ))}
-        </motion.div>
+        <AnimatePresence>
+          {loading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex justify-center items-center h-40"
+            >
+              <Loader2 className="w-12 h-12 text-white animate-spin" />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, staggerChildren: 0.1 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12"
+            >
+              {userDetails?.Links?.map((link, index) => (
+                <LinkCard
+                  key={link._id}
+                  link={link.url}
+                  title={link.title}
+                  index={index}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 };
 
-const ProfileCard = ({ name, email, imageUrl, coverUrl }) => {
+const ProfileCard = ({ name, email, imageUrl, color }) => {
   return (
-    <div className="relative mb-16">
-      <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div>
-      <img
-        src={coverUrl}
-        alt="Cover"
-        className="w-full h-64 object-cover rounded-lg shadow-lg"
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      className="bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-8 relative text-center max-w-md mx-auto"
+    >
+      <motion.img
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5 }}
+        src={imageUrl}
+        alt="Profile"
+        className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-white shadow-lg"
       />
-      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        <img
-          src={imageUrl}
-          alt="Profile"
-          className="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4"
-        />
-        <h2 className="text-3xl font-bold">{name}</h2>
-        <p className="text-lg opacity-75">{email}</p>
-      </div>
-    </div>
+      <h3 className="font-bold text-3xl mt-4 text-white">{name}</h3>
+      <p className="text-gray-200 mt-2">{email}</p>
+    </motion.div>
   );
 };
 
 const LinkCard = ({ link, title, index }) => {
   const colors = [
-    "from-blue-400 to-indigo-500",
-    "from-green-400 to-teal-500",
-    "from-yellow-400 to-orange-500",
-    "from-pink-400 to-rose-500",
-    "from-purple-400 to-indigo-500",
+    "from-blue-400 to-indigo-600",
+    "from-green-400 to-teal-600",
+    "from-yellow-400 to-orange-600",
+    "from-pink-400 to-rose-600",
+    "from-purple-400 to-indigo-600",
   ];
 
   const iconBackgrounds = [
-    "bg-indigo-600",
-    "bg-teal-600",
-    "bg-orange-600",
-    "bg-rose-600",
-    "bg-purple-600",
+    "bg-indigo-700",
+    "bg-teal-700",
+    "bg-orange-700",
+    "bg-rose-700",
+    "bg-purple-700",
   ];
 
   return (
@@ -135,7 +138,7 @@ const LinkCard = ({ link, title, index }) => {
           <p className="text-sm text-white opacity-75 truncate">{link}</p>
         </div>
       </div>
-      <div className="bg-white bg-opacity-20 px-6 py-2">
+      <div className="bg-black bg-opacity-20 px-6 py-2">
         <p className="text-xs text-white font-medium">Click to visit</p>
       </div>
     </motion.a>

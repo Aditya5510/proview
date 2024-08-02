@@ -47,6 +47,7 @@
     "embla-carousel-react": "^8.0.2",
     "framer-motion": "^11.3.8",
     "input-otp": "^1.2.4",
+    "lucide-react": "^0.419.0",
     "menubar": "^9.4.0",
     "next-themes": "^0.3.0",
     "npx": "^10.2.2",

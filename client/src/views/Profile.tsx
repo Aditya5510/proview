@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, ExternalLink } from "lucide-react";
 import { getLinks } from "@/api/User";
 import { isLoggedIn } from "@/helpers/authHelper";
+import { useDayRender } from "react-day-picker";
 
 const Profile = () => {
   const user = isLoggedIn();
@@ -16,6 +17,7 @@ const Profile = () => {
       try {
         const data = await getLinks(id);
         setUserDetails(data);
+        // console.log(data);
         localStorage.setItem("cover", data.cover);
         localStorage.setItem("image", data.profile);
       } catch (error) {
@@ -37,8 +39,8 @@ const Profile = () => {
           transition={{ duration: 0.5 }}
         >
           <ProfileCard
-            name={user?.username}
-            email={user?.email}
+            name={userDetails?.username}
+            email={userDetails?.email}
             imageUrl={localStorage.getItem("image")}
             color={userDetails?.colour}
           />

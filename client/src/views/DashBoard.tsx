@@ -40,6 +40,7 @@ const DashBoard = () => {
       try {
         const data = await getLinks(user?.userId);
         setUserDetails(data);
+        // console.log(data);
       } catch (error) {
         console.error("Error fetching user details:", error);
       } finally {
@@ -67,6 +68,7 @@ const DashBoard = () => {
               imageUrl={localStorage.getItem("image")}
               color={userDetails?.colour}
               shareLink={shareLink}
+              cover={localStorage.getItem("cover")}
             />
           </motion.div>
 
@@ -104,30 +106,40 @@ const DashBoard = () => {
   );
 };
 
-const ProfileCard = ({ name, email, imageUrl, shareLink, color }) => {
+const ProfileCard = ({ name, email, imageUrl, shareLink, color, cover }) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
-      className="bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-8 relative text-center max-w-md mx-auto"
+      className="relative overflow-hidden bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-8 text-center max-w-md mx-auto"
+      style={{
+        background: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${cover})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      <motion.img
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.5 }}
-        src={imageUrl}
-        alt="Profile"
-        className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-white shadow-lg"
-      />
-      <h3 className="font-bold text-3xl mt-4 text-white">{name}</h3>
-      <p className="text-gray-200 mt-2">{email}</p>
-      <div className="mt-6 flex justify-center space-x-4">
-        <DialogComponent shareLink={shareLink} />
-        <CopyToClipboardButton text={shareLink} />
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{ backgroundColor: color }}
+      ></div>
+      <div className="relative z-10">
+        <motion.img
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
+          src={imageUrl}
+          alt="Profile"
+          className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-white shadow-lg"
+        />
+        <h3 className="font-bold text-3xl mt-4 text-white">{name}</h3>
+        <p className="text-gray-200 mt-2">{email}</p>
+        <div className="mt-6 flex justify-center space-x-4">
+          <DialogComponent shareLink={shareLink} />
+          <CopyToClipboardButton text={shareLink} />
+        </div>
       </div>
     </motion.div>
   );
 };
-
 const LinkCard = ({ link, title, index }) => {
   const colors = [
     "from-blue-400 to-indigo-600",

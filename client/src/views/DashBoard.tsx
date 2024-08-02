@@ -1,10 +1,10 @@
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getLinks } from "@/api/User";
 import { Navbar } from "@/component/Navbar";
 import { isLoggedIn } from "@/helpers/authHelper";
-import React from "react";
 import { Button } from "@/components/ui/button";
-import { BiLoader, BiShare } from "react-icons/bi";
+import { Loader2, ExternalLink, Copy, Check } from "lucide-react";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -24,41 +24,37 @@ interface UserDetails {
   }[];
 }
 
-const data = [
+const shareButtons = [
   { Button: FacebookShareButton, Icon: FacebookIcon, Title: "Facebook" },
-  { Button: WhatsappShareButton, Icon: WhatsappIcon, Title: "Whatsapp" },
+  { Button: WhatsappShareButton, Icon: WhatsappIcon, Title: "WhatsApp" },
   { Button: InstapaperShareButton, Icon: InstapaperIcon, Title: "Instapaper" },
 ];
 
 const DashBoard = () => {
   const user = isLoggedIn();
-  const [userDetails, setUserDetails] = React.useState<UserDetails | null>(
-    null
-  );
-  const [load, setLoad] = React.useState(false);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    const getallLinks = () => {
-      setLoad(true);
-      getLinks(user?.userId).then((data) => {
+  useEffect(() => {
+    const fetchLinks = async () => {
+      try {
+        const data = await getLinks(user?.userId);
         setUserDetails(data);
-        setLoad(false);
-      });
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    getallLinks();
-  }, []);
+    fetchLinks();
+  }, [user?.userId]);
 
-  const share_link = `https://proview-7pk6.vercel.app/data/${user?.userId}`;
+  const shareLink = `https://proview-7pk6.vercel.app/data/${user?.userId}`;
 
   return (
     <>
       <Navbar />
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="min-h-screen bg-gradient-to-br from-gray-900 to-black overflow-y-auto"
-      >
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 overflow-y-auto">
         <div className="container mx-auto px-4 py-20">
           <motion.div
             initial={{ y: -50, opacity: 0 }}
@@ -70,40 +66,45 @@ const DashBoard = () => {
               name={user.username}
               imageUrl={localStorage.getItem("image")}
               color={userDetails?.colour}
-              shareLink={share_link}
+              shareLink={shareLink}
             />
           </motion.div>
 
           <AnimatePresence>
-            {load ? (
+            {loading ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="flex justify-center items-center h-40"
               >
-                <BiLoader className="animate-spin h-12 w-12 text-white" />
+                <Loader2 className="w-12 h-12 text-white animate-spin" />
               </motion.div>
             ) : (
               <motion.div
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, staggerChildren: 0.1 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12"
               >
-                {userDetails?.Links?.map((link) => (
-                  <LinkCard key={link._id} link={link.url} title={link.title} />
+                {userDetails?.Links?.map((link, index) => (
+                  <LinkCard
+                    key={link._id}
+                    link={link.url}
+                    title={link.title}
+                    index={index}
+                  />
                 ))}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 };
 
-const ProfileCard = ({ name, email, imageUrl, color, shareLink }) => {
+const ProfileCard = ({ name, email, imageUrl, shareLink, color }) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -115,60 +116,121 @@ const ProfileCard = ({ name, email, imageUrl, color, shareLink }) => {
         transition={{ duration: 0.5 }}
         src={imageUrl}
         alt="Profile"
-        className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-gray-200 shadow-lg"
+        className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-white shadow-lg"
       />
-      <h3 className="font-bold text-2xl mt-4 text-white">{name}</h3>
-      <p className="text-gray-300 mt-2">{email}</p>
-      <div className="absolute top-4 right-4">
-        <DialogComponent data={data} shareLink={shareLink} text="" />
+      <h3 className="font-bold text-3xl mt-4 text-white">{name}</h3>
+      <p className="text-gray-200 mt-2">{email}</p>
+      <div className="mt-6 flex justify-center space-x-4">
+        <DialogComponent shareLink={shareLink} />
+        <CopyToClipboardButton text={shareLink} />
       </div>
     </motion.div>
   );
 };
 
-const LinkCard = ({ link, title }) => {
+const LinkCard = ({ link, title, index }) => {
+  const colors = [
+    "from-blue-400 to-indigo-600",
+    "from-green-400 to-teal-600",
+    "from-yellow-400 to-orange-600",
+    "from-pink-400 to-rose-600",
+    "from-purple-400 to-indigo-600",
+  ];
+
+  const iconBackgrounds = [
+    "bg-indigo-700",
+    "bg-teal-700",
+    "bg-orange-700",
+    "bg-rose-700",
+    "bg-purple-700",
+  ];
+
   return (
     <motion.a
       href={link}
       target="_blank"
       rel="noopener noreferrer"
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.05, rotate: 1 }}
       whileTap={{ scale: 0.95 }}
-      className="block bg-white bg-opacity-10 backdrop-blur-lg rounded-lg shadow-md p-4 transition duration-300 ease-in-out hover:shadow-xl"
+      className={`block rounded-xl shadow-lg overflow-hidden transition duration-300 ease-in-out hover:shadow-2xl bg-gradient-to-r ${
+        colors[index % colors.length]
+      }`}
     >
-      <h4 className="text-lg font-semibold text-white mb-2">
-        {title.toUpperCase()}
-      </h4>
-      <p className="text-sm text-gray-300 truncate hover:underline">{link}</p>
+      <div className="p-6 flex items-center">
+        <div
+          className={`w-12 h-12 rounded-full ${
+            iconBackgrounds[index % iconBackgrounds.length]
+          } flex items-center justify-center mr-4 flex-shrink-0`}
+        >
+          <ExternalLink className="w-6 h-6 text-white" />
+        </div>
+        <div className="flex-grow">
+          <h4 className="text-xl font-semibold text-white mb-1">{title}</h4>
+          <p className="text-sm text-white opacity-75 truncate">{link}</p>
+        </div>
+      </div>
+      <div className="bg-black bg-opacity-20 px-6 py-2">
+        <p className="text-xs text-white font-medium">Click to visit</p>
+      </div>
     </motion.a>
   );
 };
 
-export const DialogComponent = ({ data, shareLink, text }) => {
+export const DialogComponent = ({ shareLink }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          size="icon"
-          className="bg-white bg-opacity-20 text-white hover:bg-white hover:bg-opacity-30 size-9"
+          size="sm"
+          className="bg-white bg-opacity-20 text-white hover:bg-white hover:bg-opacity-30"
         >
-          {!text ? <BiShare className="h-4 w-4" /> : text}
+          Share
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-gray-900 text-white">
         <div className="flex justify-around items-center pt-4">
-          {data.map((val, index) => (
+          {shareButtons.map((ShareButton, index) => (
             <div key={index} className="flex flex-col items-center gap-2">
-              <val.Button url={shareLink}>
-                <val.Icon size={32} round />
-              </val.Button>
-              <p className="text-sm text-gray-300">{val.Title}</p>
+              <ShareButton.Button url={shareLink}>
+                <ShareButton.Icon size={32} round />
+              </ShareButton.Button>
+              <p className="text-sm text-gray-300">{ShareButton.Title}</p>
             </div>
           ))}
         </div>
       </DialogContent>
     </Dialog>
+  );
+};
+
+const CopyToClipboardButton = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      className="bg-white bg-opacity-20 text-white hover:bg-white hover:bg-opacity-30"
+      onClick={handleCopy}
+    >
+      {copied ? (
+        <Check className="h-4 w-4 mr-2" />
+      ) : (
+        <Copy className="h-4 w-4 mr-2" />
+      )}
+      {copied ? "Copied!" : "Copy Link"}
+    </Button>
   );
 };
 

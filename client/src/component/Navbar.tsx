@@ -1,78 +1,102 @@
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { MdHome } from "react-icons/md";
-
-import { RiAdminFill } from "react-icons/ri";
 import { FaLink } from "react-icons/fa6";
-import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "@/helpers/authHelper";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isHovering, setIsHovering] = useState(false);
+
   function handleLogout() {
     logoutUser();
     navigate("/login");
   }
 
   return (
-    // <Menubar className="flex justify-center h-14 items-center gap-3 ">
-    //   <Link to="/">
-    //     {" "}
-    //     <MenubarMenu>
-    //       <MenubarTrigger className="flex items-center gap-1 justify-center cursor-pointer">
-    //         {" "}
-    //         <MdHome className="h-6 w-6 " /> Home
-    //       </MenubarTrigger>
-    //     </MenubarMenu>
-    //   </Link>
-
-    //   <Link to="/link">
-    //     <MenubarMenu>
-    //       <div className="cursor-pointer flex gap-1 items-center">
-    //         <FaLink className="h-6 w-6" />
-    //         Links
-    //       </div>
-    //     </MenubarMenu>
-    //   </Link>
-    //   <MenubarMenu>
-    //     <Button onClick={handleLogout}>Logout</Button>
-    //   </MenubarMenu>
-    // </Menubar>
-    <div className="w-full bg-gray-800 text-white shadow-md">
+    <motion.nav
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg"
+    >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex space-x-4">
-            <Link
-              to="/"
-              className="flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition duration-150 ease-in-out"
-            >
-              <MdHome className="h-5 w-5 mr-1" />
-              Home
-            </Link>
-            <Link
+            <NavLink to="/" icon={<MdHome className="h-5 w-5" />} text="Home" />
+            <NavLink
               to="/link"
-              className="flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition duration-150 ease-in-out"
-            >
-              <FaLink className="h-5 w-5 mr-1" />
-              Links
-            </Link>
+              icon={<FaLink className="h-5 w-5" />}
+              text="Links"
+            />
           </div>
-          <Button
-            onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onHoverStart={() => setIsHovering(true)}
+            onHoverEnd={() => setIsHovering(false)}
           >
-            Logout
-          </Button>
+            <Button
+              onClick={handleLogout}
+              className="relative overflow-hidden bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+            >
+              <span className="relative z-10">Logout</span>
+              <AnimatePresence>
+                {isHovering && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600"
+                    style={{ mixBlendMode: "overlay" }}
+                  />
+                )}
+              </AnimatePresence>
+              <motion.div
+                className="absolute inset-0 bg-white opacity-20"
+                initial={{ x: "100%" }}
+                animate={{ x: isHovering ? "0%" : "100%" }}
+                transition={{ duration: 0.3 }}
+              />
+            </Button>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.nav>
   );
 }
+
+const NavLink = ({ to, icon, text }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+
+  return (
+    <Link to={to} className="relative group">
+      <div
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out ${
+          isActive ? "text-white" : "text-gray-300 hover:text-white"
+        }`}
+      >
+        {icon}
+        <span className="ml-2">{text}</span>
+      </div>
+      {isActive && (
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
+          layoutId="navbar-underline"
+          initial={false}
+          transition={{
+            type: "spring",
+            stiffness: 380,
+            damping: 30,
+          }}
+        />
+      )}
+    </Link>
+  );
+};
+
+export default Navbar;

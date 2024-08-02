@@ -37,7 +37,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 overflow-y-auto">
       <div className="container mx-auto px-4 py-12">
         <motion.div
           initial={{ y: -50, opacity: 0 }}

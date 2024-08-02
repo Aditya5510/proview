@@ -1,176 +1,216 @@
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import React from "react";
-import { signup } from "@/api/User";
-import { loginUser } from "@/helpers/authHelper";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { BiLoader } from "react-icons/bi";
+import { Loader2, User, Mail, Lock } from "lucide-react";
+import { signup } from "@/api/User";
+import { loginUser } from "@/helpers/authHelper";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function Signup() {
-  const [error, setServerError] = React.useState("");
   const navigate = useNavigate();
-  const [loading, setLoading] = React.useState(false);
-
-  const formData = {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSignup = async () => {
+  const handleSignup = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    const usernameInput = document.getElementById(
-      "Username"
-    ) as HTMLInputElement;
-    const emailInput = document.getElementById("email") as HTMLInputElement;
-    const passwordInput = document.getElementById(
-      "password"
-    ) as HTMLInputElement;
-    const confirmPasswordInput = document.getElementById(
-      "cpassword"
-    ) as HTMLInputElement;
 
-    formData.username = usernameInput.value;
-    formData.email = emailInput.value;
-    formData.password = passwordInput.value;
-    const confirmPassword = confirmPasswordInput.value;
-
-    if (formData.password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       setLoading(false);
       return;
     }
 
-    const data = await signup(formData);
+    try {
+      const data = await signup({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    if (data.error) {
-      setServerError(data.error);
-      toast.error(data.error);
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        loginUser(data);
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    } finally {
       setLoading(false);
-    } else {
-      loginUser(data);
-      navigate("/");
     }
   };
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center bg-gradient-to-br from-gray-900 to-gray-800">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+    <div className="flex h-screen bg-white">
+      {/* Left Column - Image */}
+      <div
+        className="hidden lg:flex lg:w-1/2 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url('https://source.unsplash.com/random?technology&grayscale')",
+        }}
       >
-        <Card className="w-96 bg-white shadow-2xl">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold tracking-tight">
-              Sign Up
-            </CardTitle>
-            <CardDescription className="text-gray-500">
-              Create a new account
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
+        <div className="w-full flex flex-col justify-center items-center bg-black bg-opacity-50 text-white p-12">
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-4xl font-bold mb-4"
+          >
+            Join Our Community
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-xl text-center"
+          >
+            Sign up to start managing your links and boosting your online
+            presence.
+          </motion.p>
+        </div>
+      </div>
+
+      {/* Right Column - Signup Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-100">
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          <h2 className="text-3xl font-bold text-black mb-6">
+            Create Your Account
+          </h2>
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div>
               <Label
-                htmlFor="Username"
-                className="text-sm font-medium text-gray-700"
+                htmlFor="username"
+                className="text-sm font-medium text-gray-700 mb-1 block"
               >
                 Username
               </Label>
-              <Input
-                id="Username"
-                name="Username"
-                placeholder="johndoe"
-                required
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-              />
+              <div className="relative">
+                <Input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  className="pl-10 w-full border-gray-300"
+                  placeholder="johndoe"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              </div>
             </div>
-            <div className="space-y-2">
+            <div>
               <Label
                 htmlFor="email"
-                className="text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700 mb-1 block"
               >
                 Email
               </Label>
-              <Input
-                id="email"
-                name="email"
-                placeholder="john@example.com"
-                required
-                type="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-              />
+              <div className="relative">
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className="pl-10 w-full border-gray-300"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              </div>
             </div>
-            <div className="space-y-2">
+            <div>
               <Label
                 htmlFor="password"
-                className="text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700 mb-1 block"
               >
                 Password
               </Label>
-              <Input
-                id="password"
-                name="password"
-                required
-                type="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  className="pl-10 w-full border-gray-300"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              </div>
             </div>
-            <div className="space-y-2">
+            <div>
               <Label
-                htmlFor="cpassword"
-                className="text-sm font-medium text-gray-700"
+                htmlFor="confirmPassword"
+                className="text-sm font-medium text-gray-700 mb-1 block"
               >
                 Confirm Password
               </Label>
-              <Input
-                id="cpassword"
-                name="cpassword"
-                required
-                type="password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-              />
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  className="pl-10 w-full border-gray-300"
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              </div>
             </div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              {loading ? (
-                <Button disabled className="w-full bg-gray-800 text-white">
-                  <BiLoader className="animate-spin mr-2" />
-                  Loading
-                </Button>
-              ) : (
-                <Button
-                  className="w-full bg-gray-800 text-white hover:bg-gray-700"
-                  type="submit"
-                  onClick={handleSignup}
-                >
-                  Sign Up
-                </Button>
-              )}
+              <Button
+                type="submit"
+                className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                    Signing up...
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
+              </Button>
             </motion.div>
-            <p className="text-sm text-center text-gray-600">
+          </form>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
               Already have an account?{" "}
               <Button
                 variant="link"
-                className="p-0 text-gray-800 hover:text-gray-600"
-                onClick={() => navigate("/Login")}
+                className="p-0 text-black hover:text-gray-700"
+                onClick={() => navigate("/login")}
               >
                 Log in
               </Button>
             </p>
-          </CardContent>
-        </Card>
-      </motion.div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

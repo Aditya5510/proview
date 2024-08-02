@@ -451,12 +451,8 @@ const Link = () => {
                   </div>
                 </form>
                 <h2 className="text-xl font-bold">{user.username}</h2>
-                <p className="text-gray-400 mt-2">{user.email}</p>
-                <DialogComponent
-                  data={data1}
-                  shareLink={share_link}
-                  text="Share"
-                />
+                <p className="text-gray-400 mt-2 mb-5">{user.email}</p>
+                <DialogComponent shareLink={share_link} />
               </CardContent>
             </Card>
 

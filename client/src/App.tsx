@@ -39,7 +39,6 @@ const router = createBrowserRouter([
     path: "/data/:id",
     element: <Profile />,
   },
-
 ]);
 
 function App() {

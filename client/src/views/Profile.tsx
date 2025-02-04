@@ -1,14 +1,108 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ExternalLink } from "lucide-react";
+import { Loader2, ExternalLink, ArrowRight, PlusCircle } from "lucide-react";
 import { getLinks } from "@/api/User";
 import { isLoggedIn } from "@/helpers/authHelper";
-import { useDayRender } from "react-day-picker";
+
+const CreateProfileButton = () => {
+  const [showMobileButton, setShowMobileButton] = useState(false);
+  const isMobile = window.innerWidth <= 768;
+  const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isMobile) {
+        setShowMobileButton(window.scrollY > 200);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
+
+  const buttonContent = (
+    <>
+      <span className="relative inline-flex items-center gap-2">
+        <PlusCircle
+          className={`w-5 h-5 transition-transform duration-300 ${
+            isHovered ? "rotate-180" : ""
+          }`}
+        />
+        <span className="font-semibold tracking-wide">Create Your Own</span>
+        <ArrowRight
+          className={`w-5 h-5 transition-all duration-300 ${
+            isHovered ? "translate-x-1 scale-110" : ""
+          }`}
+        />
+      </span>
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Button */}
+      {!isMobile && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-6 right-6 z-50"
+        >
+          <motion.button
+            onClick={() => navigate("/")}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="group relative overflow-hidden bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-indigo-500/50 transition-all duration-300"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 animate-gradient-x" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 animate-shimmer" />
+            </div>
+            <div className="relative z-10">{buttonContent}</div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 rounded-xl blur opacity-30 group-hover:opacity-75 transition duration-300" />
+          </motion.button>
+        </motion.div>
+      )}
+
+      {/* Mobile Button */}
+      <AnimatePresence>
+        {isMobile && showMobileButton && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-6 inset-x-6 z-50"
+          >
+            <motion.button
+              onClick={() => navigate("/")}
+              whileTap={{ scale: 0.95 }}
+              className="w-full group relative overflow-hidden bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 text-white px-6 py-3.5 rounded-xl shadow-lg"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 animate-gradient-x" />
+              <div className="relative z-10">{buttonContent}</div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 rounded-xl blur opacity-30 group-hover:opacity-75 transition duration-300" />
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+// Add these to your global CSS or tailwind.config.js
+const styles = `
+
+`;
 
 const Profile = () => {
   const user = isLoggedIn();
-  let { id } = useParams();
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -17,7 +111,6 @@ const Profile = () => {
       try {
         const data = await getLinks(id);
         setUserDetails(data);
-        // console.log(data);
         localStorage.setItem("cover", data.cover);
         localStorage.setItem("image", data.profile);
       } catch (error) {
@@ -76,6 +169,8 @@ const Profile = () => {
           )}
         </AnimatePresence>
       </div>
+
+      <CreateProfileButton />
     </div>
   );
 };
@@ -110,6 +205,7 @@ const ProfileCard = ({ name, email, imageUrl, color, cover }) => {
     </motion.div>
   );
 };
+
 const LinkCard = ({ link, title, index }) => {
   const colors = [
     "from-blue-400 to-indigo-600",

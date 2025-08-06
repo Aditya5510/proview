@@ -8,6 +8,8 @@ import { loginUser } from "@/helpers/authHelper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import GoogleOAuthButton from "@/components/GoogleOAuthButton";
 
 function Signup() {
   const navigate = useNavigate();
@@ -197,6 +199,24 @@ function Signup() {
               </Button>
             </motion.div>
           </form>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <GoogleOAuthButton text="Sign up with Google" />
+            </div>
+          </div>
+
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}

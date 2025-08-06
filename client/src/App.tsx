@@ -6,6 +6,7 @@ import Login from "./views/Login";
 import Signup from "./views/Signup";
 import PrivateRoute from "./helpers/PrivateRoute";
 import Link from "./views/Link";
+import AuthCallback from "./views/AuthCallback";
 
 import { Toaster } from "@/components/ui/sonner";
 import Profile from "./views/Profile";
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
   {
     path: "/data/:id",
     element: <Profile />,
+  },
+  {
+    path: "/auth/callback",
+    element: <AuthCallback />,
   },
 ]);
 

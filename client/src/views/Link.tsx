@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   AddLink,
   deleteEntry,
@@ -38,8 +38,27 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { MdDelete } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { MdDelete, MdDragHandle } from "react-icons/md";
+import { FaEdit, FaEye, FaEyeSlash } from "react-icons/fa";
+import {
+  Link as LinkIcon,
+  Plus,
+  Settings,
+  Palette,
+  Image as ImageIcon,
+  Upload,
+  Copy,
+  ExternalLink,
+  Globe,
+  Github,
+  Linkedin,
+  Twitter,
+  Instagram,
+  Youtube,
+  Facebook,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isLoggedIn } from "@/helpers/authHelper";
@@ -69,6 +88,34 @@ const extractCompanyName = (url) => {
   return "";
 };
 
+const getPlatformIcon = (url) => {
+  const domain = extractCompanyName(url).toLowerCase();
+  const iconMap = {
+    github: Github,
+    linkedin: Linkedin,
+    twitter: Twitter,
+    instagram: Instagram,
+    youtube: Youtube,
+    facebook: Facebook,
+  };
+
+  return iconMap[domain] || Globe;
+};
+
+const getPlatformColor = (url) => {
+  const domain = extractCompanyName(url).toLowerCase();
+  const colorMap = {
+    github: "from-gray-700 to-gray-900",
+    linkedin: "from-blue-600 to-blue-800",
+    twitter: "from-sky-400 to-sky-600",
+    instagram: "from-pink-500 to-purple-600 via-orange-500",
+    youtube: "from-red-500 to-red-700",
+    facebook: "from-blue-500 to-blue-700",
+  };
+
+  return colorMap[domain] || "from-gray-500 to-gray-700";
+};
+
 const data1 = [
   { Button: FacebookShareButton, Icon: FacebookIcon, Title: "Facebook" },
   { Button: WhatsappShareButton, Icon: WhatsappIcon, Title: "Whatsapp" },
@@ -89,9 +136,14 @@ const Link = () => {
     async function fetchData() {
       try {
         const response = await updateLink1(user);
-        setLinkData(response);
+        // Ensure linkData is always an array
+        const linksArray = Array.isArray(response)
+          ? response
+          : response?.data || [];
+        setLinkData(linksArray);
       } catch (error) {
         console.error("Error fetching links:", error);
+        setLinkData([]); // Fallback to empty array on error
       }
     }
     fetchData();
@@ -128,7 +180,9 @@ const Link = () => {
       const response = await updatentries(user, { title, url, description });
       if (response?.success) {
         toast.success("Link updated successfully");
-        setLinkData(response?.data);
+        // Ensure linkData is always an array
+        const linksArray = Array.isArray(response?.data) ? response.data : [];
+        setLinkData(linksArray);
       } else {
         toast.error("Error updating link");
       }
@@ -222,26 +276,27 @@ const Link = () => {
   const share_link = `https://proview-7pk6.vercel.app/data/${user?.userId}`;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white"
-    >
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-8">
-            <Card className="bg-white bg-opacity-10 backdrop-blur-lg">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        {/* Header Section */}
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Manage Links
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
+            Add and organize your profile links
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Add New Link</CardTitle>
+                <CardDescription>Add a link to your profile</CardDescription>
+              </CardHeader>
               <form onSubmit={postData}>
-                <CardHeader>
-                  <CardTitle className="text-2xl">
-                    Add a new profile link
-                  </CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Enter the details for your new link
-                  </CardDescription>
-                </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="Url">URL</Label>
@@ -250,7 +305,7 @@ const Link = () => {
                       type="url"
                       id="Url"
                       placeholder="https://github.com/username"
-                      className="bg-gray-800 border-gray-700 text-white"
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -260,276 +315,327 @@ const Link = () => {
                       type="text"
                       id="title"
                       placeholder="Visit my GitHub profile"
-                      className="bg-gray-800 border-gray-700 text-white"
+                      required
                     />
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    type="submit"
-                    className="w-full bg-white text-black hover:bg-gray-200"
-                    disabled={loading}
-                  >
+                  <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? (
                       <>
-                        <BiLoaderAlt className="animate-spin mr-2" /> Adding...
+                        <BiLoaderAlt className="animate-spin mr-2 w-4 h-4" />
+                        Adding...
                       </>
                     ) : (
-                      "Add this URL"
+                      <>
+                        <Plus className="mr-2 w-4 h-4" />
+                        Add Link
+                      </>
                     )}
                   </Button>
                 </CardFooter>
               </form>
             </Card>
 
-            <Card className="bg-white bg-opacity-10 backdrop-blur-lg">
+            <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Your Links</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Manage your profile links
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Your Links</CardTitle>
+                    <CardDescription>
+                      {Array.isArray(linkData) ? linkData.length : 0} links in
+                      your profile
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <motion.div layout className="space-y-4">
-                  {linkData?.map((link, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3 }}
-                      className="p-4 border border-gray-700 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center"
-                    >
-                      <div className="space-y-2 mb-4 md:mb-0">
-                        <h3 className="text-lg font-semibold">
-                          {link.title.toUpperCase()}
-                        </h3>
-                        <p className="text-gray-400 break-all">{link.url}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <FaEdit className="mr-2" /> Edit
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="bg-gray-800 text-white">
-                            <DialogHeader>
-                              <DialogTitle>Edit Link</DialogTitle>
-                              <DialogDescription>
-                                Make changes to your link here.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4 py-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="edit-url">URL</Label>
-                                <Input
-                                  id="edit-url"
-                                  defaultValue={link?.url}
-                                  className="bg-gray-700 text-white"
-                                />
+                {!Array.isArray(linkData) || linkData.length === 0 ? (
+                  <div className="text-center py-12">
+                    <ExternalLink className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No links yet</h3>
+                    <p className="text-muted-foreground">
+                      Add your first link to get started
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {linkData.map((link, index) => {
+                      const IconComponent = getPlatformIcon(link.url);
+                      const extractDomain = (url) => {
+                        try {
+                          return new URL(url).hostname.replace("www.", "");
+                        } catch {
+                          return "Invalid URL";
+                        }
+                      };
+
+                      return (
+                        <div
+                          key={link._id || index}
+                          className="p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="flex items-center space-x-3 flex-1 min-w-0">
+                              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <IconComponent className="w-5 h-5 text-primary" />
                               </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="edit-title">Title</Label>
-                                <Input
-                                  id="edit-title"
-                                  defaultValue={link?.description}
-                                  className="bg-gray-700 text-white"
-                                />
+                              <div className="min-w-0 flex-1">
+                                <h4 className="font-medium text-sm truncate">
+                                  {link.title}
+                                </h4>
+                                <p className="text-sm text-muted-foreground truncate">
+                                  {link.description}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {extractDomain(link.url)}
+                                </p>
                               </div>
                             </div>
-                            <DialogFooter>
-                              <Button
-                                onClick={() => {
-                                  const urlInput = document.getElementById(
-                                    "edit-url"
-                                  ) as HTMLInputElement;
-                                  const titleInput = document.getElementById(
-                                    "edit-title"
-                                  ) as HTMLInputElement;
 
-                                  if (urlInput && titleInput) {
-                                    updatLinknew(
-                                      link?.title,
-                                      urlInput.value,
-                                      titleInput.value
-                                    );
-                                  } else {
-                                    toast.error(
-                                      "Error: Input fields not found"
-                                    );
-                                  }
+                            <div className="flex items-center gap-2 self-end sm:self-auto">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(link.url);
+                                  toast.success("Link copied!");
                                 }}
-                                disabled={load}
                               >
-                                {load ? "Updating..." : "Save changes"}
+                                <Copy className="w-4 h-4" />
                               </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="sm">
-                              <MdDelete className="mr-2" /> Delete
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-gray-800 text-white">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will
-                                permanently delete this link.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="bg-gray-700 text-white">
-                                Cancel
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => deleteLink(link?.title)}
-                                className="bg-red-600 text-white hover:bg-red-700"
-                              >
-                                {load ? (
-                                  <BiLoaderAlt className="animate-spin" />
-                                ) : (
-                                  "Delete"
-                                )}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
+
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <FaEdit className="w-4 h-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>Edit Link</DialogTitle>
+                                    <DialogDescription>
+                                      Update your link information
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="space-y-4 py-4">
+                                    <div className="space-y-2">
+                                      <Label htmlFor={`edit-url-${index}`}>
+                                        URL
+                                      </Label>
+                                      <Input
+                                        id={`edit-url-${index}`}
+                                        defaultValue={link?.url}
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label htmlFor={`edit-title-${index}`}>
+                                        Description
+                                      </Label>
+                                      <Input
+                                        id={`edit-title-${index}`}
+                                        defaultValue={link?.description}
+                                      />
+                                    </div>
+                                  </div>
+                                  <DialogFooter>
+                                    <Button
+                                      onClick={() => {
+                                        const urlInput =
+                                          document.getElementById(
+                                            `edit-url-${index}`
+                                          ) as HTMLInputElement;
+                                        const titleInput =
+                                          document.getElementById(
+                                            `edit-title-${index}`
+                                          ) as HTMLInputElement;
+
+                                        if (urlInput && titleInput) {
+                                          updatLinknew(
+                                            link?.title,
+                                            urlInput.value,
+                                            titleInput.value
+                                          );
+                                        } else {
+                                          toast.error(
+                                            "Error: Input fields not found"
+                                          );
+                                        }
+                                      }}
+                                      disabled={load}
+                                    >
+                                      {load ? (
+                                        <>
+                                          <BiLoaderAlt className="animate-spin mr-2 w-4 h-4" />
+                                          Updating...
+                                        </>
+                                      ) : (
+                                        "Save Changes"
+                                      )}
+                                    </Button>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-destructive"
+                                  >
+                                    <MdDelete className="w-4 h-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Delete Link
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "
+                                      {link.title}"? This action cannot be
+                                      undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => deleteLink(link?.title)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      {load ? (
+                                        <BiLoaderAlt className="animate-spin w-4 h-4" />
+                                      ) : (
+                                        "Delete"
+                                      )}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
 
-          <div className="space-y-8">
-            <Card className="bg-white bg-opacity-10 backdrop-blur-lg">
+          <div className="space-y-6">
+            {/* Profile Card */}
+            <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Your Profile</CardTitle>
-                <CardDescription className="text-gray-400">
-                  {user.username}
-                </CardDescription>
+                <CardTitle>Profile</CardTitle>
+                <CardDescription>{user.username}</CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col items-center">
-                <img
-                  src={localStorage.getItem("image")}
-                  alt="profile"
-                  className="w-32 h-32 rounded-full object-cover mb-4"
-                />
-                <form
-                  onSubmit={(e) => handleImageUpload(e, updateImage)}
-                  className="w-full"
-                >
-                  <div className="flex justify-center mb-4">
-                    <label
-                      htmlFor="profile-upload"
-                      className="cursor-pointer bg-gray-700 text-white px-4 py-2 rounded-l-md hover:bg-gray-600"
-                    >
-                      Choose File
-                    </label>
-                    <input
-                      type="file"
-                      id="profile-upload"
-                      className="hidden"
-                      onChange={handleImageChange}
-                    />
-                    <Button
-                      type="submit"
-                      className="bg-white text-black rounded-r-md hover:bg-gray-200"
-                      disabled={uploadLoader}
-                    >
-                      {uploadLoader ? (
-                        <BiLoaderAlt className="animate-spin" />
-                      ) : (
-                        "Update"
-                      )}
-                    </Button>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={localStorage.getItem("image")}
+                    alt="profile"
+                    className="w-12 h-12 rounded-full object-cover border-2"
+                  />
+                  <div>
+                    <p className="font-medium">{user.username}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
-                </form>
-                <h2 className="text-xl font-bold">{user.username}</h2>
-                <p className="text-gray-400 mt-2 mb-5">{user.email}</p>
-                <DialogComponent shareLink={share_link} />
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    navigator.clipboard.writeText(share_link);
+                    toast.success("Profile link copied!");
+                  }}
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy Profile Link
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-white bg-opacity-10 backdrop-blur-lg">
+            {/* Profile Settings */}
+            <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Main Page Settings</CardTitle>
+                <CardTitle>Profile Settings</CardTitle>
+                <CardDescription>
+                  Update your profile appearance
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <h3 className="font-bold mb-4">Cover Image</h3>
-                <img
-                  src={localStorage.getItem("cover")}
-                  alt="cover"
-                  className="w-full h-40 object-cover rounded-lg mb-4"
-                />
-                <form
-                  onSubmit={(e) => handleImageUpload(e, updateImage1)}
-                  className="mb-8"
-                >
-                  <div className="flex justify-center">
-                    <label
-                      htmlFor="cover-upload"
-                      className="cursor-pointer bg-gray-700 text-white px-4 py-2 rounded-l-md hover:bg-gray-600"
-                    >
-                      Choose File
-                    </label>
-                    <input
-                      type="file"
-                      id="cover-upload"
-                      className="hidden"
-                      onChange={handleImageChange}
-                    />
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Profile Picture</Label>
+                  <form onSubmit={(e) => handleImageUpload(e, updateImage)}>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Input
+                        type="file"
+                        onChange={handleImageChange}
+                        accept="image/*"
+                        className="flex-1"
+                      />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        disabled={uploadLoader || !selectedImage}
+                      >
+                        {uploadLoader ? (
+                          <BiLoaderAlt className="animate-spin w-4 h-4" />
+                        ) : (
+                          "Update"
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label>Theme Color</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {["red", "blue", "green", "purple", "black"].map(
+                      (color) => (
+                        <Button
+                          key={color}
+                          variant={
+                            selectedColor === color ? "default" : "outline"
+                          }
+                          size="sm"
+                          onClick={() => setSelectedColor(color)}
+                          className="capitalize flex-1 min-w-0"
+                        >
+                          {color}
+                        </Button>
+                      )
+                    )}
+                  </div>
+                  {selectedColor && (
                     <Button
-                      type="submit"
-                      className="bg-white text-black rounded-r-md hover:bg-gray-200"
-                      disabled={uploadLoader}
+                      onClick={handleColorChange}
+                      className="w-full mt-2"
+                      disabled={colorUploadLoader}
                     >
-                      {uploadLoader ? (
-                        <BiLoaderAlt className="animate-spin" />
+                      {colorUploadLoader ? (
+                        <BiLoaderAlt className="animate-spin w-4 h-4 mr-2" />
                       ) : (
-                        "Update Cover"
+                        "Apply Color"
                       )}
                     </Button>
-                  </div>
-                </form>
-
-                <div className="space-y-4">
-                  <h3 className="font-bold">Select Cover Colour</h3>
-                  <select
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white"
-                    value={selectedColor}
-                    onChange={(e) => setSelectedColor(e.target.value)}
-                  >
-                    <option value="">Select a colour</option>
-                    <option value="red">Red</option>
-                    <option value="blue">Blue</option>
-                    <option value="green">Green</option>
-                    <option value="yellow">Yellow</option>
-                    <option value="black">Black</option>
-                  </select>
-                  <Button
-                    onClick={handleColorChange}
-                    className="w-full bg-white text-black hover:bg-gray-200"
-                    disabled={colorUploadLoader}
-                  >
-                    {colorUploadLoader ? (
-                      <BiLoaderAlt className="animate-spin" />
-                    ) : (
-                      "Update Colour"
-                    )}
-                  </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

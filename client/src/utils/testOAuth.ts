@@ -1,4 +1,3 @@
-// Test OAuth configuration
 export const oauthConfig = {
   development: {
     backendURL: "http://localhost:5000",

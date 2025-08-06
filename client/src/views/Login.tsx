@@ -17,10 +17,10 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
-  // Debug OAuth configuration
-  React.useEffect(() => {
-    testOAuthConfig();
-  }, []);
+  // Debug OAuth configuration (can be removed in production)
+  // React.useEffect(() => {
+  //   testOAuthConfig();
+  // }, []);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

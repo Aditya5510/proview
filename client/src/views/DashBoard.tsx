@@ -192,13 +192,12 @@ const DashBoard = () => {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {userDetails?.Links?.map((link, index) => (
+                      {userDetails?.Links?.map((link) => (
                         <LinkCard
                           key={link._id}
                           link={link.url}
                           title={link.title}
-                          description={link.description}
-                          index={index}
+                          description={(link as any).description || link.title}
                         />
                       ))}
                     </div>

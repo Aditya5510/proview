@@ -1,14 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+
+dotenv.config();
+
 const cors = require("cors");
-// const path = require("path");
+const session = require("express-session");
+const passport = require("./config/passport");
+
 const app = express();
 const bodyParser = require("body-parser");
 
 const users = require("./routes/users");
-
-dotenv.config();
+const auth = require("./routes/auth");
 
 const httpServer = require("http").createServer(app);
 
@@ -31,15 +35,23 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/users", users);
-
-// if (process.env.NODE_ENV == "production") {
-//   app.use(express.static(path.join(__dirname, "/client/build")));
-
-//   app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "client/build", "index.html"));
-//   });
-// }
+app.use("/auth", auth);

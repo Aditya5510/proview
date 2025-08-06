@@ -18,19 +18,27 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleId;
+      },
       minLength: [8, "Must be at least 8 characters long"],
+    },
+    googleId: {
+      type: String,
+      sparse: true,
+    },
+    image: {
+      type: String,
+      default: "https://via.placeholder.com/150",
     },
     phone: {
       type: String,
     },
     state: {
       type: String,
-
     },
     college: {
       type: String,
-
     },
     dob: {
       type: Date,
@@ -45,21 +53,20 @@ const UserSchema = new mongoose.Schema(
         ref: "Link",
       },
     ],
-    profile:{
+    profile: {
       type: String,
-      default: "https://www.gravatar.com/avatar/"
+      default: "https://www.gravatar.com/avatar/",
     },
-    colour:{
+    colour: {
       type: String,
-      default: "#000000"
+      default: "#000000",
     },
-    cover:{
+    cover: {
       type: String,
-      default: "https://media.istockphoto.com/id/938484386/vector/abstract-blue-gradient-background.jpg?s=612x612&w=0&k=20&c=F5lRq6NW_24AZHR1mTI0_gfkoacLu1gycs_TRZhvzr8="
-    }
-
+      default:
+        "https://media.istockphoto.com/id/938484386/vector/abstract-blue-gradient-background.jpg?s=612x612&w=0&k=20&c=F5lRq6NW_24AZHR1mTI0_gfkoacLu1gycs_TRZhvzr8=",
+    },
   },
-
 
   { timestamps: true }
 );

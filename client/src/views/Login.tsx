@@ -1,26 +1,23 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { Loader2, Mail, Lock } from "lucide-react";
-import { login } from "@/api/User";
-import { loginUser } from "@/helpers/authHelper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
+import { login } from "@/api/User";
+import { toast } from "sonner";
 import GoogleOAuthButton from "@/components/GoogleOAuthButton";
-import { testOAuthConfig } from "@/utils/testOAuth";
 
-function Login() {
-  const navigate = useNavigate();
+const Login = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ email: "", password: "" });
-
-  // Debug OAuth configuration (can be removed in production)
-  // React.useEffect(() => {
-  //   testOAuthConfig();
-  // }, []);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,12 +26,14 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const data = await login(formData);
       if (data.error) {
         toast.error(data.error);
       } else {
-        loginUser(data);
+        localStorage.setItem("user", JSON.stringify(data));
+        toast.success("Login successful!");
         navigate("/");
       }
     } catch (error) {
@@ -85,7 +84,7 @@ function Login() {
           <h2 className="text-3xl font-bold text-black mb-6">
             Login to Your Account
           </h2>
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <Label
                 htmlFor="email"
@@ -118,14 +117,25 @@ function Login() {
                 <Input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
-                  className="pl-10 w-full border-gray-300"
+                  className="pl-10 pr-10 w-full border-gray-300"
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleInputChange}
                 />
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -152,14 +162,14 @@ function Login() {
                 <Separator className="w-full" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">
+                <span className="bg-gray-100 px-2 text-gray-500">
                   Or continue with
                 </span>
               </div>
             </div>
 
             <div className="mt-6">
-              <GoogleOAuthButton text="Continue with Google" />
+              <GoogleOAuthButton />
             </div>
           </div>
 
@@ -169,7 +179,7 @@ function Login() {
               <Button
                 variant="link"
                 className="p-0 text-black hover:text-gray-700"
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate("/Signup")}
               >
                 Sign up
               </Button>
@@ -179,6 +189,6 @@ function Login() {
       </div>
     </div>
   );
-}
+};
 
 export default Login;

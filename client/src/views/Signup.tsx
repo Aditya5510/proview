@@ -213,7 +213,7 @@ function Signup() {
             </div>
 
             <div className="mt-6">
-              <GoogleOAuthButton text="Sign up with Google" />
+              <GoogleOAuthButton />
             </div>
           </div>
 

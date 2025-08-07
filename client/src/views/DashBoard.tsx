@@ -107,7 +107,6 @@ const DashBoard = () => {
       try {
         const data = await getLinks(user?.userId);
         setUserDetails(data);
-        // console.log(data);
       } catch (error) {
         console.error("Error fetching user details:", error);
       } finally {
@@ -126,7 +125,9 @@ const DashBoard = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
           {/* Header Section */}
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Dashboard
+            </h1>
             <p className="text-sm sm:text-base text-muted-foreground mt-1">
               Manage your profile and links
             </p>
@@ -248,7 +249,7 @@ const ProfileCard = ({
               </div>
             </div>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2">
             <DialogComponent shareLink={shareLink} />

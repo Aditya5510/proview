@@ -1,5 +1,3 @@
-// import { Button } from "./components/ui/button";
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import DashBoard from "./views/DashBoard";
 import Login from "./views/Login";

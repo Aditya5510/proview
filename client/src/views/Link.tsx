@@ -132,22 +132,25 @@ const Link = () => {
   const [colorUploadLoader, setColorUploadLoader] = useState(false);
   const user = isLoggedIn();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await updateLink1(user);
-        // Ensure linkData is always an array
-        const linksArray = Array.isArray(response)
-          ? response
-          : response?.data || [];
-        setLinkData(linksArray);
-      } catch (error) {
-        console.error("Error fetching links:", error);
-        setLinkData([]); // Fallback to empty array on error
+  const fetchLinks = async () => {
+    try {
+      const data = await updateLink1(user);
+      if (Array.isArray(data)) {
+        setLinkData(data);
+      } else {
+        setLinkData([]);
       }
+    } catch (error) {
+      console.error("Error fetching links:", error);
+      setLinkData([]);
     }
-    fetchData();
-  }, [loading, load]);
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchLinks();
+    }
+  }, [user]);
 
   const postData = async (e) => {
     e.preventDefault();
@@ -157,21 +160,27 @@ const Link = () => {
     const url = formData.get("Url");
     const cname = extractCompanyName(url);
 
-    toast.promise(
-      AddLink(user, {
+    try {
+      const data = await AddLink(user, {
+        userId: user.userId,
         title: cname,
         url: url,
         description: title,
-      }),
-      {
-        loading: "Adding Link!",
-        error: "Unable to add link",
-        success: "Successfully Added Link",
-        finally: () => {
-          setLoading(false);
-        },
+      });
+
+      if (data.succes) {
+        toast.success("Link added successfully!");
+        e.target.reset();
+        fetchLinks();
+      } else {
+        toast.error(data.error || "Failed to add link");
       }
-    );
+    } catch (error) {
+      console.error("Error adding link:", error);
+      toast.error("Failed to add link");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updatLinknew = async (title, url, description) => {
@@ -180,9 +189,7 @@ const Link = () => {
       const response = await updatentries(user, { title, url, description });
       if (response?.success) {
         toast.success("Link updated successfully");
-        // Ensure linkData is always an array
-        const linksArray = Array.isArray(response?.data) ? response.data : [];
-        setLinkData(linksArray);
+        fetchLinks();
       } else {
         toast.error("Error updating link");
       }
@@ -200,6 +207,7 @@ const Link = () => {
       const response = await deleteEntry(user, { title });
       if (response?.success) {
         toast.success("Link deleted successfully");
+        fetchLinks();
       } else {
         toast.error("Error deleting link");
       }

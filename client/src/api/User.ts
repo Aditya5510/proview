@@ -1,7 +1,6 @@
 import BASE_URL from "../config";
 
 const signup = async (user: any) => {
-  console.log(user);
   try {
     const res = await fetch(BASE_URL + "api/users/register", {
       method: "POST",
@@ -13,7 +12,7 @@ const signup = async (user: any) => {
     });
     return await res.json();
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 };
 
@@ -29,12 +28,11 @@ const login = async (user: any) => {
     });
     return await res.json();
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 };
 const AddLink = async (user: any, data: any) => {
   try {
-    // console.log("Sending request with data:", data);
     const res = await fetch(BASE_URL + "api/users/addLink", {
       method: "POST",
       headers: {
@@ -45,23 +43,23 @@ const AddLink = async (user: any, data: any) => {
       body: JSON.stringify(data),
     });
     const json = await res.json();
-    // console.log("Response:", json);
     return json;
   } catch (err) {
     console.error("Error adding link:", err);
-    throw err; // Rethrow the error to inform the caller of the failure
+    throw err;
   }
 };
 
 const updateLink1 = async (user: any) => {
   try {
     const res = await fetch(BASE_URL + "api/users/getLinks", {
-      method: "GET",
+      method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
         "x-access-token": user.token,
       },
+      body: JSON.stringify({ userId: user.userId }),
     });
     const json = await res.json();
     return json;
@@ -73,7 +71,6 @@ const updateLink1 = async (user: any) => {
 
 const updatentries = async (user: any, data: any) => {
   try {
-    // console.log("Sending request with data:", data);
     const res = await fetch(BASE_URL + "api/users/updateLink", {
       method: "POST",
       headers: {
@@ -84,11 +81,10 @@ const updatentries = async (user: any, data: any) => {
       body: JSON.stringify(data),
     });
     const json = await res.json();
-    // console.log("Response:", json);
     return json;
   } catch (err) {
     console.error("Error updating link:", err);
-    throw err; // Rethrow the error to inform the caller of the failure
+    throw err;
   }
 };
 
@@ -104,11 +100,9 @@ const deleteEntry = async (user: any, data: any) => {
       body: JSON.stringify(data),
     });
     const json = await res.json();
-    // console.log("Response:", json);
     return json;
   } catch (err) {
-    // console.error("Error deleting link:", err);
-    throw err; // Rethrow the error to inform the caller of the failure
+    throw err;
   }
 };
 
@@ -132,7 +126,6 @@ const updateImage = async (user: any, data: any) => {
 };
 
 const getLinks = (id: string) => {
-  // console.log(id);
   return fetch(BASE_URL + `api/users/getLinks/${id}`, {
     method: "GET",
     headers: {
@@ -143,7 +136,9 @@ const getLinks = (id: string) => {
     .then((res) => {
       return res.json();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      throw err;
+    });
 };
 
 const updateColor = async (user: any, data: any) => {
@@ -160,14 +155,13 @@ const updateColor = async (user: any, data: any) => {
     const json = await res.json();
     return json;
   } catch (err) {
-    console.error("Error updating image:", err);
+    console.error("Error updating color:", err);
     throw err;
   }
 };
 
 const updateImage1 = async (user: any, data: any) => {
   try {
-    // console.log("Sending request with data:", data);
     const res = await fetch(BASE_URL + "api/users/updateImage2", {
       method: "POST",
       headers: {
@@ -180,7 +174,41 @@ const updateImage1 = async (user: any, data: any) => {
     const json = await res.json();
     return json;
   } catch (err) {
-    console.error("Error updating image:", err);
+    console.error("Error updating cover image:", err);
+    throw err;
+  }
+};
+
+const likeProfile = async (userId: string) => {
+  try {
+    const res = await fetch(BASE_URL + `api/users/like/${userId}`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await res.json();
+    return json;
+  } catch (err) {
+    console.error("Error liking profile:", err);
+    throw err;
+  }
+};
+
+const getProfileStats = async (userId: string) => {
+  try {
+    const res = await fetch(BASE_URL + `api/users/stats/${userId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await res.json();
+    return json;
+  } catch (err) {
+    console.error("Error getting profile stats:", err);
     throw err;
   }
 };
@@ -196,4 +224,6 @@ export {
   getLinks,
   updateColor,
   updateImage1,
+  likeProfile,
+  getProfileStats,
 };

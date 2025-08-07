@@ -14,11 +14,9 @@ const AuthCallback = () => {
       try {
         const user = JSON.parse(decodeURIComponent(userStr));
 
-        // Store authentication data
         localStorage.setItem("authToken", token);
         localStorage.setItem("user", JSON.stringify(user));
 
-        // Set default image if OAuth provided one
         if (user.image) {
           localStorage.setItem("image", user.image);
         }

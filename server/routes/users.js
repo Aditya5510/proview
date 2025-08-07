@@ -6,7 +6,7 @@ const { verifyToken } = require("../middleware/auth");
 router.post("/register", userControllers.register);
 router.post("/login", userControllers.login);
 router.post("/addLink", verifyToken, userControllers.AddLink);
-router.get("/getLinks", verifyToken, userControllers.GetLinks);
+router.post("/getLinks", verifyToken, userControllers.GetLinks);
 router.post("/updateLink", verifyToken, userControllers.UpdateLink);
 router.post("/deleteLink", verifyToken, userControllers.DeleteLink);
 router.post("/updateImage", verifyToken, userControllers.UpdateImage);

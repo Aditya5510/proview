@@ -96,7 +96,8 @@ const login = async (req, res) => {
 
 const AddLink = async (req, res) => {
   try {
-    const { userId, title, url, description } = req.body;
+    const { title, url, description } = req.body;
+    const userId = req.user.userId;
 
     const user = await User.findById(userId).populate("Links");
     if (!user) {
@@ -132,7 +133,7 @@ const AddLink = async (req, res) => {
 
 const GetLinks = (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.user.userId;
     User.findById(userId)
       .populate("Links")
       .exec((err, user) => {
@@ -153,7 +154,8 @@ const GetLinks = (req, res) => {
 
 const UpdateLink = async (req, res) => {
   try {
-    const { userId, title, url, description } = req.body;
+    const { title, url, description } = req.body;
+    const userId = req.user.userId;
     const user = await User.findById(userId).populate("Links");
     if (!user) {
       throw new Error("User not found");
@@ -178,7 +180,8 @@ const UpdateLink = async (req, res) => {
 
 const DeleteLink = async (req, res) => {
   try {
-    const { userId, title } = req.body;
+    const { title } = req.body;
+    const userId = req.user.userId;
     const user = await User.findById(userId).populate("Links");
     if (!user) {
       throw new Error("User not found");
@@ -202,7 +205,8 @@ const DeleteLink = async (req, res) => {
 
 const UpdateImage = async (req, res) => {
   try {
-    const { userId, profile } = req.body;
+    const { profile } = req.body;
+    const userId = req.user.userId;
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -306,7 +310,8 @@ const getProfileStats = async (req, res) => {
 
 const UpdateColor = async (req, res) => {
   try {
-    const { userId, color } = req.body;
+    const { color } = req.body;
+    const userId = req.user.userId;
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -321,7 +326,8 @@ const UpdateColor = async (req, res) => {
 
 const UpdateCover = async (req, res) => {
   try {
-    const { userId, cover } = req.body;
+    const { cover } = req.body;
+    const userId = req.user.userId;
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");

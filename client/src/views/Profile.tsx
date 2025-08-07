@@ -364,7 +364,6 @@ const Profile = () => {
       } ${currentBackgroundPattern} ${customization.darkMode ? "dark" : ""}`}
     >
       <div className="container mx-auto px-4 py-8 max-w-md">
-        {/* Header with stats */}
         <motion.div
           initial={currentAnimation.initial}
           animate={currentAnimation.animate}
@@ -374,17 +373,10 @@ const Profile = () => {
           <div className="flex items-center gap-4">
             <Badge
               variant="secondary"
-              className={`${currentTheme.button} text-xs`}
+              className={`${currentTheme.button} text-xs p-2`}
             >
               <Eye className="w-3 h-3 mr-1" />
               {profileStats.views} views
-            </Badge>
-            <Badge
-              variant="secondary"
-              className={`${currentTheme.button} text-xs`}
-            >
-              <Heart className="w-3 h-3 mr-1" />
-              {profileStats.likes} likes
             </Badge>
           </div>
 
@@ -410,21 +402,6 @@ const Profile = () => {
                 />
               )}
               {profileStats.likes}
-            </Button>
-
-            <Button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              variant="outline"
-              size="sm"
-              className={`${currentTheme.button} text-xs`}
-            >
-              {isRefreshing ? (
-                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-              ) : (
-                <RefreshCw className="w-3 h-3 mr-1" />
-              )}
-              Refresh
             </Button>
 
             <Button

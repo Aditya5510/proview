@@ -38,8 +38,6 @@ router.get(
       const token = jwt.sign(
         {
           userId: req.user._id,
-          email: req.user.email,
-          username: req.user.username,
         },
         process.env.TOKEN_KEY || "your-fallback-secret-key-for-development",
         { expiresIn: "30d" }

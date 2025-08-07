@@ -51,7 +51,7 @@ const register = async (req, res) => {
       email: normalizedEmail,
       password: hashedPassword,
     });
-    const token = jwt.sign(buildToken(user), process.env.TOKEN_KEY);
+    const token = jwt.sign(buildToken(user), process.env.TOKEN_KEY || "your-fallback-secret-key-for-development");
 
     return res.json({
       ...getUserDict(token, user),
@@ -86,7 +86,7 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       throw new Error("Email or password incorrect");
     }
-    const token = jwt.sign(buildToken(user), process.env.TOKEN_KEY);
+    const token = jwt.sign(buildToken(user), process.env.TOKEN_KEY || "your-fallback-secret-key-for-development");
 
     return res.json(getUserDict(token, user));
   } catch (err) {

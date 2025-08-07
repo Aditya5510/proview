@@ -6,10 +6,13 @@ const verifyToken = (req, res, next) => {
   if (!token) {
     return res.status(403).send("A token is required for authentication");
   }
+  
   try {
-    const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+    const secret = process.env.TOKEN_KEY || "your-fallback-secret-key-for-development";
+    const decoded = jwt.verify(token, secret);
     req.user = decoded;
   } catch (err) {
+    console.error("Token verification failed:", err.message);
     return res.status(401).send("Invalid Token");
   }
   return next();

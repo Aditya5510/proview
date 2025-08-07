@@ -66,6 +66,26 @@ const UserSchema = new mongoose.Schema(
       default:
         "https://media.istockphoto.com/id/938484386/vector/abstract-blue-gradient-background.jpg?s=612x612&w=0&k=20&c=F5lRq6NW_24AZHR1mTI0_gfkoacLu1gycs_TRZhvzr8=",
     },
+    views: {
+      type: Number,
+      default: 0,
+    },
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    likedBy: [
+      {
+        type: String,
+        unique: true,
+      },
+    ],
+    viewedBy: [
+      {
+        type: String,
+        unique: true,
+      },
+    ],
   },
 
   { timestamps: true }

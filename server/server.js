@@ -1,34 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-
-dotenv.config();
-
 const cors = require("cors");
 const session = require("express-session");
-const passport = require("./config/passport");
+const cookieParser = require("cookie-parser");
+const passport = require("passport");
+require("dotenv").config();
 
 const app = express();
-const bodyParser = require("body-parser");
-
-const users = require("./routes/users");
-const auth = require("./routes/auth");
-
-const httpServer = require("http").createServer(app);
-
-mongoose.connect(
-  process.env.MONGO_URI,
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  () => {
-    console.log("MongoDB connected");
-  }
-);
-
-httpServer.listen(process.env.PORT || 5000, () => {
-  console.log("Listening");
-});
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://proview-7pk6.vercel.app"],
@@ -36,13 +18,23 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "your-secret-key",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -50,8 +42,23 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+require("./config/passport")(passport);
 
-app.use("/api/users", users);
-app.use("/auth", auth);
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
+
+app.use("/api/users", require("./routes/users"));
+app.use("/auth", require("./routes/auth"));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+module.exports = app;

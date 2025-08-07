@@ -1,72 +1,67 @@
 const express = require("express");
+const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-const router = express.Router();
 
-// @route   GET /auth/google
-// @desc    Auth with Google
-// @access  Public
+const isLocal = process.env.NODE_ENV !== "production";
+const frontendURL = isLocal
+  ? "http://localhost:5173"
+  : "https://proview-7pk6.vercel.app";
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// @route   GET /auth/google/callback
-// @desc    Google auth callback
-// @access  Public
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false }),
+  passport.authenticate("google", {
+    failureRedirect: `${frontendURL}/login`,
+    session: false,
+  }),
   (req, res) => {
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        userId: req.user._id,
-        email: req.user.email,
-        username: req.user.username,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "30d" }
-    );
+    try {
+      if (!req.user) {
+        console.error("No user object in request");
+        return res.redirect(`${frontendURL}/login?error=no_user`);
+      }
 
-    // Redirect to frontend with token
-    // Detect if running locally (development server uses port 5000)
-    const isLocal =
-      req.get("host")?.includes("localhost") ||
-      req.get("host")?.includes("127.0.0.1");
-    const frontendURL = isLocal
-      ? "http://localhost:5173"
-      : "https://proview-7pk6.vercel.app";
+      if (!process.env.TOKEN_KEY) {
+        console.error("TOKEN_KEY environment variable is not set");
+        // Use a fallback secret if TOKEN_KEY is not set
+        const fallbackSecret = "your-fallback-secret-key-for-development";
+        console.warn(
+          "Using fallback secret - this should be fixed in production"
+        );
+      }
 
-    console.log("OAuth Callback Debug:");
-    console.log("Host:", req.get("host"));
-    console.log("Is Local:", isLocal);
-    console.log("Frontend URL:", frontendURL);
-
-    // Redirect with token as query parameter
-    res.redirect(
-      `${frontendURL}/auth/callback?token=${token}&user=${encodeURIComponent(
-        JSON.stringify({
+      const token = jwt.sign(
+        {
           userId: req.user._id,
           email: req.user.email,
           username: req.user.username,
-          image: req.user.image,
-        })
-      )}`
-    );
+        },
+        process.env.TOKEN_KEY || "your-fallback-secret-key-for-development",
+        { expiresIn: "30d" }
+      );
+
+      const userData = {
+        userId: req.user._id,
+        email: req.user.email,
+        username: req.user.username,
+        image: req.user.image || req.user.profile,
+      };
+
+      res.redirect(
+        `${frontendURL}/auth/callback?token=${token}&user=${encodeURIComponent(
+          JSON.stringify(userData)
+        )}`
+      );
+    } catch (error) {
+      console.error("Error in Google OAuth callback:", error);
+      res.redirect(`${frontendURL}/login?error=auth_failed`);
+    }
   }
 );
-
-// @route   POST /auth/logout
-// @desc    Logout user
-// @access  Public
-router.post("/logout", (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ error: "Logout failed" });
-    }
-    res.json({ message: "Logged out successfully" });
-  });
-});
 
 module.exports = router;

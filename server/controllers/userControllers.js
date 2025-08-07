@@ -2,6 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Link = require("../models/Link");
+const crypto = require("crypto");
 
 const getUserDict = (token, user) => {
   return {
@@ -21,6 +22,13 @@ const buildToken = (user) => {
   return {
     userId: user._id,
   };
+};
+
+const generateVisitorId = (req) => {
+  const ip = req.ip || req.connection.remoteAddress;
+  const userAgent = req.get("User-Agent") || "";
+  const combined = `${ip}-${userAgent}`;
+  return crypto.createHash("md5").update(combined).digest("hex");
 };
 
 const register = async (req, res) => {
@@ -50,7 +58,6 @@ const register = async (req, res) => {
       message: "Registered successfully",
     });
   } catch (err) {
-    // console.log(err)
     return res.status(400).json({
       error: err.message,
       message: "This is error while sending email from backend ",
@@ -81,25 +88,20 @@ const login = async (req, res) => {
     }
     const token = jwt.sign(buildToken(user), process.env.TOKEN_KEY);
 
-    console.log(user);
     return res.json(getUserDict(token, user));
   } catch (err) {
-    console.log(err);
     return res.status(400).json({ error: err.message });
   }
 };
+
 const AddLink = async (req, res) => {
   try {
-    // console.log(req.body)
     const { userId, title, url, description } = req.body;
-    // console.log(userId, title, url, description);
 
     const user = await User.findById(userId).populate("Links");
     if (!user) {
       throw new Error("User not found");
     }
-
-    console.log(user.Links);
 
     for (const link of user.Links) {
       if (link.url === url) {
@@ -124,7 +126,6 @@ const AddLink = async (req, res) => {
 
     return res.status(200).json({ succes: true, link });
   } catch (err) {
-    console.log(err);
     return res.status(400).json({ error: err.message });
   }
 };
@@ -136,10 +137,14 @@ const GetLinks = (req, res) => {
       .populate("Links")
       .exec((err, user) => {
         if (err) {
-          throw new Error("User not found");
+          return res.status(400).json({ error: "User not found" });
         }
 
-        return res.status(200).json(user.Links);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+
+        return res.status(200).json(user.Links || []);
       });
   } catch (err) {
     return res.status(400).json({ error: err.message });
@@ -154,9 +159,7 @@ const UpdateLink = async (req, res) => {
       throw new Error("User not found");
     }
 
-    // console.log("user", user);
     const tobedelete = user.Links.filter((link) => link.title === title);
-    // console.log(tobedelete);
 
     const link = user.Links.find((link) => link.title === title);
     if (!link) {
@@ -176,7 +179,6 @@ const UpdateLink = async (req, res) => {
 const DeleteLink = async (req, res) => {
   try {
     const { userId, title } = req.body;
-    // console.log(userId, title);
     const user = await User.findById(userId).populate("Links");
     if (!user) {
       throw new Error("User not found");
@@ -187,12 +189,10 @@ const DeleteLink = async (req, res) => {
       throw new Error("Link not found");
     }
 
-    //remove from user.links array as well
     const index = user.Links.indexOf(link);
     user.Links.splice(index, 1);
     await link.remove();
     await user.save();
-    console.log(user);
 
     return res.status(200).json({ success: true });
   } catch (err) {
@@ -203,7 +203,6 @@ const DeleteLink = async (req, res) => {
 const UpdateImage = async (req, res) => {
   try {
     const { userId, profile } = req.body;
-    // console.log(userId, profile);
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -219,15 +218,87 @@ const UpdateImage = async (req, res) => {
 const getLinks = (req, res) => {
   try {
     const { userId } = req.params;
-    console.log(userId);
+    const visitorId = generateVisitorId(req);
+
     User.findById(userId)
       .populate("Links")
-      .exec((err, user) => {
+      .exec(async (err, user) => {
         if (err) {
-          throw new Error("User not found");
+          return res.status(400).json({ error: "User not found" });
         }
+
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+
+        if (!user.viewedBy.includes(visitorId)) {
+          user.viewedBy.push(visitorId);
+          user.views = user.viewedBy.length;
+          await user.save();
+        }
+
         return res.status(200).json(user);
       });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+const likeProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const visitorId = generateVisitorId(req);
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.likedBy.includes(visitorId)) {
+      user.likedBy = user.likedBy.filter((id) => id !== visitorId);
+      user.likes = user.likedBy.length;
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        liked: false,
+        likes: user.likes,
+        message: "Profile unliked successfully",
+      });
+    } else {
+      user.likedBy.push(visitorId);
+      user.likes = user.likedBy.length;
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        liked: true,
+        likes: user.likes,
+        message: "Profile liked successfully",
+      });
+    }
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+const getProfileStats = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const visitorId = generateVisitorId(req);
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const hasLiked = user.likedBy.includes(visitorId);
+
+    return res.status(200).json({
+      views: user.views,
+      likes: user.likes,
+      hasLiked: hasLiked,
+    });
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }
@@ -251,7 +322,6 @@ const UpdateColor = async (req, res) => {
 const UpdateCover = async (req, res) => {
   try {
     const { userId, cover } = req.body;
-    // console.log( cover);
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -275,4 +345,6 @@ module.exports = {
   getLinks,
   UpdateColor,
   UpdateCover,
+  likeProfile,
+  getProfileStats,
 };

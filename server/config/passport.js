@@ -1,67 +1,61 @@
-const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/User");
 
-console.log("Loading Passport configuration...");
-console.log(
-  "GOOGLE_CLIENT_ID:",
-  process.env.GOOGLE_CLIENT_ID ? "✓ Loaded" : "✗ Missing"
-);
-console.log(
-  "GOOGLE_CLIENT_SECRET:",
-  process.env.GOOGLE_CLIENT_SECRET ? "✓ Loaded" : "✗ Missing"
-);
+module.exports = function (passport) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL:
+          process.env.NODE_ENV === "production"
+            ? "https://proview-backend-five.vercel.app/auth/google/callback"
+            : "http://localhost:5000/auth/google/callback",
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          console.log("Google OAuth profile:", {
+            id: profile.id,
+            displayName: profile.displayName,
+            email: profile.emails?.[0]?.value,
+            photo: profile.photos?.[0]?.value,
+          });
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback",
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        let existingUser = await User.findOne({
-          $or: [{ googleId: profile.id }, { email: profile.emails[0].value }],
-        });
+          let user = await User.findOne({ googleId: profile.id });
 
-        if (existingUser) {
-          if (!existingUser.googleId) {
-            existingUser.googleId = profile.id;
-            await existingUser.save();
+          if (user) {
+            console.log("Existing user found:", user._id);
+            return done(null, user);
           }
-          return done(null, existingUser);
+
+          console.log("Creating new user...");
+          user = await User.create({
+            googleId: profile.id,
+            username: profile.displayName,
+            email: profile.emails[0].value,
+            image: profile.photos[0].value,
+          });
+
+          console.log("New user created:", user._id);
+          return done(null, user);
+        } catch (error) {
+          console.error("Error in Google OAuth strategy:", error);
+          return done(error, null);
         }
-
-        const newUser = new User({
-          googleId: profile.id,
-          username: profile.displayName,
-          email: profile.emails[0].value,
-          image: profile.photos[0].value,
-
-          password: "oauth_user_" + Math.random().toString(36).substring(7),
-        });
-
-        const savedUser = await newUser.save();
-        return done(null, savedUser);
-      } catch (error) {
-        return done(error, null);
       }
+    )
+  );
+
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findById(id);
+      done(null, user);
+    } catch (error) {
+      done(error, null);
     }
-  )
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
-
-module.exports = passport;
+  });
+};

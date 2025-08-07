@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { login } from "@/api/User";
+import { loginUser } from "@/helpers/authHelper";
 import { toast } from "sonner";
 import GoogleOAuthButton from "@/components/GoogleOAuthButton";
 
@@ -32,7 +33,7 @@ const Login = () => {
       if (data.error) {
         toast.error(data.error);
       } else {
-        localStorage.setItem("user", JSON.stringify(data));
+        loginUser(data);
         toast.success("Login successful!");
         navigate("/");
       }

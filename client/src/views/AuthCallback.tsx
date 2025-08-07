@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { loginUser } from "@/helpers/authHelper";
 import { toast } from "sonner";
 
 const AuthCallback = () => {
@@ -14,12 +15,10 @@ const AuthCallback = () => {
       try {
         const user = JSON.parse(decodeURIComponent(userStr));
 
-        localStorage.setItem("authToken", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        // Add token to user object and use loginUser function
+        const userWithToken = { ...user, token };
 
-        if (user.image) {
-          localStorage.setItem("image", user.image);
-        }
+        loginUser(userWithToken);
 
         toast.success("Successfully signed in with Google!");
         navigate("/");

@@ -97,7 +97,6 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({
             </div>
           </div>
 
-          {/* URL Display */}
           <div className="p-3 bg-muted rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Profile URL</p>
             <div className="flex items-center gap-2">
@@ -117,7 +116,6 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2">
             <Button onClick={downloadQR} className="flex-1">
               <Download className="w-4 h-4 mr-2" />

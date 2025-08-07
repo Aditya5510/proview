@@ -17,6 +17,22 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        inter: ["Inter", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
+        roboto: ["Roboto", "sans-serif"],
+        playfair: ["Playfair Display", "serif"],
+        montserrat: ["Montserrat", "sans-serif"],
+        opensans: ["Open Sans", "sans-serif"],
+        raleway: ["Raleway", "sans-serif"],
+        nunito: ["Nunito", "sans-serif"],
+        sourcecodepro: ["Source Code Pro", "monospace"],
+        merriweather: ["Merriweather", "serif"],
+        lora: ["Lora", "serif"],
+        noto: ["Noto Sans", "sans-serif"],
+        oswald: ["Oswald", "sans-serif"],
+        monospace: ["monospace"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

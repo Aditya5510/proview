@@ -10,6 +10,8 @@ import {
 } from "@/api/User";
 import { Navbar } from "@/component/Navbar";
 import { Button } from "@/components/ui/button";
+import { AnimatedWrapper } from "@/components/AnimatedWrapper";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   Dialog,
   DialogContent,
@@ -131,6 +133,7 @@ const Link = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [colorUploadLoader, setColorUploadLoader] = useState(false);
   const user = useAuth();
+  const { settings } = useTheme();
 
   const fetchLinks = async () => {
     try {

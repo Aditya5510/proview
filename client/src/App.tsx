@@ -8,6 +8,7 @@ import AuthCallback from "./views/AuthCallback";
 
 import { Toaster } from "@/components/ui/sonner";
 import Profile from "./views/Profile";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const router = createBrowserRouter([
   {
@@ -46,10 +47,10 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <RouterProvider router={router} />
       <Toaster />
-    </>
+    </ThemeProvider>
   );
 }
 

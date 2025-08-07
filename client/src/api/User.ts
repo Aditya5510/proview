@@ -216,6 +216,60 @@ const getProfileStats = async (userId: string) => {
   }
 };
 
+const getCustomization = async (user: any) => {
+  try {
+    const res = await fetch(BASE_URL + "api/users/customization", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "x-access-token": user.token,
+      },
+    });
+    const json = await res.json();
+    return json;
+  } catch (err) {
+    console.error("Error getting customization:", err);
+    throw err;
+  }
+};
+
+const getPublicCustomization = async (userId: string) => {
+  try {
+    const res = await fetch(BASE_URL + `api/users/customization/${userId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await res.json();
+    return json;
+  } catch (err) {
+    console.error("Error getting public customization:", err);
+    throw err;
+  }
+};
+
+const updateCustomization = async (user: any, customization: any) => {
+  try {
+    const res = await fetch(BASE_URL + "api/users/customization", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "x-access-token": user.token,
+      },
+      body: JSON.stringify(customization),
+    });
+    const json = await res.json();
+    return json;
+  } catch (err) {
+    console.error("Error updating customization:", err);
+    throw err;
+  }
+};
+
 export {
   signup,
   login,
@@ -229,4 +283,7 @@ export {
   updateImage1,
   likeProfile,
   getProfileStats,
+  getCustomization,
+  getPublicCustomization,
+  updateCustomization,
 };

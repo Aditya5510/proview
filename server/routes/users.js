@@ -14,6 +14,11 @@ router.get("/getLinks/:userId", userControllers.getLinks);
 router.post("/updateColor", verifyToken, userControllers.UpdateColor);
 router.post("/updateImage2", verifyToken, userControllers.UpdateCover);
 
+// Customization routes
+router.get("/customization", verifyToken, userControllers.getCustomization);
+router.post("/customization", verifyToken, userControllers.updateCustomization);
+router.get("/customization/:userId", userControllers.getPublicCustomization);
+
 router.post("/like/:userId", userControllers.likeProfile);
 router.get("/stats/:userId", userControllers.getProfileStats);
 

@@ -51,7 +51,10 @@ const register = async (req, res) => {
       email: normalizedEmail,
       password: hashedPassword,
     });
-    const token = jwt.sign(buildToken(user), process.env.TOKEN_KEY || "your-fallback-secret-key-for-development");
+    const token = jwt.sign(
+      buildToken(user),
+      process.env.TOKEN_KEY || "your-fallback-secret-key-for-development"
+    );
 
     return res.json({
       ...getUserDict(token, user),
@@ -86,7 +89,10 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       throw new Error("Email or password incorrect");
     }
-    const token = jwt.sign(buildToken(user), process.env.TOKEN_KEY || "your-fallback-secret-key-for-development");
+    const token = jwt.sign(
+      buildToken(user),
+      process.env.TOKEN_KEY || "your-fallback-secret-key-for-development"
+    );
 
     return res.json(getUserDict(token, user));
   } catch (err) {
@@ -340,6 +346,96 @@ const UpdateCover = async (req, res) => {
   }
 };
 
+const getCustomization = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.json({
+      success: true,
+      customization: user.customization || {
+        theme: "minimal",
+        font: "inter",
+        animation: "fade",
+        backgroundPattern: "none",
+        darkMode: false,
+        animationSpeed: 0.5,
+      },
+    });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+const getPublicCustomization = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.json({
+      success: true,
+      customization: user.customization || {
+        theme: "minimal",
+        font: "inter",
+        animation: "fade",
+        backgroundPattern: "none",
+        darkMode: false,
+        animationSpeed: 0.5,
+      },
+    });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+const updateCustomization = async (req, res) => {
+  try {
+    const {
+      theme,
+      font,
+      animation,
+      backgroundPattern,
+      darkMode,
+      animationSpeed,
+    } = req.body;
+    const userId = req.user.userId;
+
+    const updateData = {};
+    if (theme) updateData["customization.theme"] = theme;
+    if (font) updateData["customization.font"] = font;
+    if (animation) updateData["customization.animation"] = animation;
+    if (backgroundPattern)
+      updateData["customization.backgroundPattern"] = backgroundPattern;
+    if (darkMode !== undefined) updateData["customization.darkMode"] = darkMode;
+    if (animationSpeed)
+      updateData["customization.animationSpeed"] = animationSpeed;
+
+    const user = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.json({
+      success: true,
+      message: "Customization updated successfully",
+      customization: user.customization,
+    });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -353,4 +449,7 @@ module.exports = {
   UpdateCover,
   likeProfile,
   getProfileStats,
+  getCustomization,
+  getPublicCustomization,
+  updateCustomization,
 };

@@ -2,7 +2,13 @@ import { useState, useEffect } from "react";
 
 const isLoggedIn = () => {
   const userString = localStorage.getItem("user");
-  return userString ? JSON.parse(userString) : null;
+  const token = localStorage.getItem("authToken");
+
+  if (userString && token) {
+    const user = JSON.parse(userString);
+    return { ...user, token };
+  }
+  return null;
 };
 
 const useAuth = () => {
@@ -22,13 +28,14 @@ const useAuth = () => {
 
 const loginUser = (user: any) => {
   localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("authToken", user.token);
   localStorage.setItem("image", user?.profile);
-
   localStorage.setItem("cover", user?.cover);
 };
 
 const logoutUser = () => {
   localStorage.removeItem("user");
+  localStorage.removeItem("authToken");
   localStorage.clear();
 };
 

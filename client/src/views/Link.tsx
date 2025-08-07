@@ -61,7 +61,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { isLoggedIn } from "@/helpers/authHelper";
+import { useAuth } from "@/helpers/authHelper";
 import React, { useState, useEffect } from "react";
 import { BiLoaderAlt } from "react-icons/bi";
 import { toast } from "sonner";
@@ -130,7 +130,7 @@ const Link = () => {
   const [uploadLoader, setUploadLoader] = useState(false);
   const [selectedColor, setSelectedColor] = useState("");
   const [colorUploadLoader, setColorUploadLoader] = useState(false);
-  const user = isLoggedIn();
+  const user = useAuth();
 
   const fetchLinks = async () => {
     try {
@@ -147,10 +147,10 @@ const Link = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && user.userId) {
       fetchLinks();
     }
-  }, [user]);
+  }, [user?.userId]);
 
   const postData = async (e) => {
     e.preventDefault();
@@ -162,7 +162,6 @@ const Link = () => {
 
     try {
       const data = await AddLink(user, {
-        userId: user.userId,
         title: cname,
         url: url,
         description: title,

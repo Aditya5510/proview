@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getLinks } from "@/api/User";
 import { Navbar } from "@/component/Navbar";
-import { isLoggedIn } from "@/helpers/authHelper";
+import { useAuth } from "@/helpers/authHelper";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -98,7 +98,7 @@ const QuickActions = ({
 };
 
 const DashBoard = () => {
-  const user = isLoggedIn();
+  const user = useAuth();
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [loading, setLoading] = useState(true);
 

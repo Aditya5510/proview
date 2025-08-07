@@ -40,7 +40,11 @@ const AddLink = async (user: any, data: any) => {
         "Content-Type": "application/json",
         "x-access-token": user.token,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        title: data.title,
+        url: data.url,
+        description: data.description,
+      }),
     });
     const json = await res.json();
     return json;
@@ -59,7 +63,6 @@ const updateLink1 = async (user: any) => {
         "Content-Type": "application/json",
         "x-access-token": user.token,
       },
-      body: JSON.stringify({ userId: user.userId }),
     });
     const json = await res.json();
     return json;

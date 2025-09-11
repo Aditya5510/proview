@@ -76,6 +76,7 @@ import {
   WhatsappShareButton,
 } from "react-share";
 import { DialogComponent } from "./DashBoard";
+import { useNavigate } from "react-router-dom";
 
 const extractCompanyName = (url) => {
   const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
@@ -134,6 +135,7 @@ const Link = () => {
   const [colorUploadLoader, setColorUploadLoader] = useState(false);
   const user = useAuth();
   const { settings } = useTheme();
+  const navigate = useNavigate();
 
   const fetchLinks = async () => {
     try {
@@ -357,6 +359,13 @@ const Link = () => {
                       your profile
                     </CardDescription>
                   </div>
+                  <Button
+                    onClick={() => navigate("/blogs")}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Manage Blogs
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent>

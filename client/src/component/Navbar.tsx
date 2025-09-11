@@ -3,21 +3,27 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdHome } from "react-icons/md";
 import { FaLink } from "react-icons/fa6";
-import { LogOut, User, Settings, Menu, X } from "lucide-react";
-import { logoutUser } from "@/helpers/authHelper";
+import { LogOut, User, Settings, Menu, X, BookOpen } from "lucide-react";
+import { logoutUser, useAuth } from "@/helpers/authHelper";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle, CustomizeButton } from "@/components/ThemeToggle";
+import { Palette } from "lucide-react";
 import { CustomizationPanel } from "@/components/CustomizationPanel";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export function Navbar() {
+  const user = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isHovering, setIsHovering] = useState(false);
   const [showCustomize, setShowCustomize] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { settings, updateSettings } = useTheme();
+
+  // Don't render navbar if user is not logged in
+  if (!user) {
+    return null;
+  }
 
   function handleLogout() {
     logoutUser();
@@ -52,12 +58,23 @@ export function Navbar() {
                 icon={<FaLink className="h-4 w-4" />}
                 text="Links"
               />
+              <NavLink
+                to="/blogs"
+                icon={<BookOpen className="h-4 w-4" />}
+                text="Blogs"
+              />
             </div>
 
             {/* Desktop User Actions */}
             <div className="hidden md:flex items-center space-x-2">
-              <ThemeToggle />
-              <CustomizeButton onClick={() => setShowCustomize(true)} />
+              <Button
+                onClick={() => setShowCustomize(true)}
+                variant="outline"
+                size="sm"
+              >
+                <Palette className="h-4 w-4 mr-2" />
+                Customize
+              </Button>
               <Button onClick={handleLogout} variant="outline" size="sm">
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -106,16 +123,28 @@ export function Navbar() {
                       text="Links"
                       onClick={() => setMobileMenuOpen(false)}
                     />
+                    <MobileNavLink
+                      to="/blogs"
+                      icon={<BookOpen className="h-4 w-4" />}
+                      text="Blogs"
+                      onClick={() => setMobileMenuOpen(false)}
+                    />
                   </div>
 
                   {/* Mobile User Actions */}
                   <div className="flex items-center justify-between pt-3 border-t">
                     <div className="flex items-center space-x-2">
-                      <ThemeToggle />
-                      <CustomizeButton onClick={() => {
-                        setShowCustomize(true);
-                        setMobileMenuOpen(false);
-                      }} />
+                      <Button
+                        onClick={() => {
+                          setShowCustomize(true);
+                          setMobileMenuOpen(false);
+                        }}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Palette className="h-4 w-4 mr-2" />
+                        Customize
+                      </Button>
                     </div>
                     <Button onClick={handleLogout} variant="outline" size="sm">
                       <LogOut className="h-4 w-4 mr-2" />

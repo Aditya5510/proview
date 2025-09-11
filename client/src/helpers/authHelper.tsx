@@ -45,7 +45,8 @@ const loginUser = (user: any) => {
 const logoutUser = () => {
   localStorage.removeItem("user");
   localStorage.removeItem("authToken");
-  localStorage.clear();
+  localStorage.removeItem("image");
+  localStorage.removeItem("cover");
 
   // Dispatch a custom event to notify the useAuth hook
   window.dispatchEvent(new Event("auth-change"));

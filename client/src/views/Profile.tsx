@@ -35,6 +35,9 @@ import {
   getProfileStats,
   getPublicCustomization,
 } from "@/api/User";
+import { getRecentBlogs } from "@/api/Blog";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { isLoggedIn } from "@/helpers/authHelper";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,7 +59,6 @@ interface CustomizationSettings {
   font: string;
   animation: string;
   backgroundPattern: string;
-  darkMode: boolean;
   animationSpeed: number;
 }
 
@@ -217,7 +219,6 @@ const Profile = () => {
     font: "inter",
     animation: "fade",
     backgroundPattern: "none",
-    darkMode: false,
     animationSpeed: 0.5,
   });
   const [loading, setLoading] = useState(true);
@@ -229,6 +230,7 @@ const Profile = () => {
   });
   const [isLiking, setIsLiking] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [recentBlogs, setRecentBlogs] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -237,11 +239,13 @@ const Profile = () => {
 
         await new Promise((resolve) => setTimeout(resolve, 500));
 
-        const [userData, customizationData, statsData] = await Promise.all([
-          getLinks(id),
-          getPublicCustomization(id),
-          getProfileStats(id),
-        ]);
+        const [userData, customizationData, statsData, blogsData] =
+          await Promise.all([
+            getLinks(id),
+            getPublicCustomization(id),
+            getProfileStats(id),
+            getRecentBlogs(id as string),
+          ]);
 
         console.log("User data:", userData);
         console.log("Customization data:", customizationData);
@@ -258,6 +262,9 @@ const Profile = () => {
           console.log("No customization data found, using defaults");
         }
         setProfileStats(statsData);
+        if (blogsData.success) {
+          setRecentBlogs(blogsData.blogs || []);
+        }
 
         localStorage.setItem("cover", userData.cover);
         localStorage.setItem("image", userData.profile);
@@ -311,11 +318,13 @@ const Profile = () => {
 
     setIsRefreshing(true);
     try {
-      const [userData, customizationData, statsData] = await Promise.all([
-        getLinks(id),
-        getPublicCustomization(id),
-        getProfileStats(id),
-      ]);
+      const [userData, customizationData, statsData, blogsData] =
+        await Promise.all([
+          getLinks(id),
+          getPublicCustomization(id),
+          getProfileStats(id),
+          getRecentBlogs(id as string),
+        ]);
 
       setUserDetails(userData);
       if (customizationData.success) {
@@ -327,6 +336,9 @@ const Profile = () => {
         toast.success("Profile refreshed!");
       }
       setProfileStats(statsData);
+      if (blogsData.success) {
+        setRecentBlogs(blogsData.blogs || []);
+      }
     } catch (error) {
       console.error("Error refreshing profile:", error);
       toast.error("Failed to refresh profile");
@@ -359,9 +371,7 @@ const Profile = () => {
 
   return (
     <div
-      className={`min-h-screen ${
-        currentTheme.background
-      } ${currentBackgroundPattern} ${customization.darkMode ? "dark" : ""}`}
+      className={`min-h-screen ${currentTheme.background} ${currentBackgroundPattern}`}
     >
       <div className="container mx-auto px-4 py-8 max-w-md">
         <motion.div
@@ -567,6 +577,21 @@ const Profile = () => {
               </Card>
             </motion.div>
           )}
+        </motion.div>
+
+        <motion.div
+          initial={currentAnimation.initial}
+          animate={currentAnimation.animate}
+          transition={{ ...currentAnimation.transition, delay: 0.25 }}
+          className="mt-8 text-center"
+        >
+          <Button
+            onClick={() => navigate(`/blogs/${id}`)}
+            variant="outline"
+            className={`${currentTheme.button}`}
+          >
+            View my blogs
+          </Button>
         </motion.div>
 
         {!user && (

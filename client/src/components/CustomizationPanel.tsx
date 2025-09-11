@@ -24,7 +24,6 @@ interface CustomizationSettings {
   font: string;
   animation: string;
   backgroundPattern: string;
-  darkMode: boolean;
   animationSpeed: number;
 }
 
@@ -103,7 +102,6 @@ export const CustomizationPanel: React.FC<CustomizationPanelProps> = ({
       font: "inter",
       animation: "fade",
       backgroundPattern: "none",
-      darkMode: false,
       animationSpeed: 0.5,
     };
     setLocalSettings(defaults);
@@ -343,19 +341,6 @@ export const CustomizationPanel: React.FC<CustomizationPanelProps> = ({
               <Separator className="my-4" />
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="dark-mode" className="text-sm font-medium">
-                    Dark Mode
-                  </Label>
-                  <Switch
-                    id="dark-mode"
-                    checked={localSettings.darkMode}
-                    onCheckedChange={(checked) =>
-                      updateSetting("darkMode", checked)
-                    }
-                  />
-                </div>
-
                 <Button
                   variant="outline"
                   size="sm"
@@ -384,22 +369,6 @@ export const CustomizationPanel: React.FC<CustomizationPanelProps> = ({
             <Separator className="my-4" />
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label
-                  htmlFor="dark-mode-mobile"
-                  className="text-sm font-medium"
-                >
-                  Dark Mode
-                </Label>
-                <Switch
-                  id="dark-mode-mobile"
-                  checked={localSettings.darkMode}
-                  onCheckedChange={(checked) =>
-                    updateSetting("darkMode", checked)
-                  }
-                />
-              </div>
-
               <Button
                 variant="outline"
                 size="sm"

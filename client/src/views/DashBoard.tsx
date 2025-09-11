@@ -35,6 +35,7 @@ import {
   WhatsappShareButton,
 } from "react-share";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useNavigate as useRRNavigate } from "react-router-dom";
 import QRCodeGenerator from "@/components/QRCodeGenerator";
 
 interface UserDetails {
@@ -59,6 +60,7 @@ const QuickActions = ({
   userId: string;
   linksCount: number;
 }) => {
+  const navigate = useRRNavigate();
   return (
     <Card>
       <CardHeader>
@@ -72,7 +74,7 @@ const QuickActions = ({
         <Button
           variant="outline"
           className="w-full justify-start"
-          onClick={() => (window.location.href = "/link")}
+          onClick={() => navigate("/Link")}
         >
           <Plus className="w-4 h-4 mr-2" />
           Add New Link
@@ -84,11 +86,29 @@ const QuickActions = ({
           description="Share your profile"
         />
 
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={() => navigate("/blogs")}
+        >
+          <Settings className="w-4 h-4 mr-2" />
+          Manage Blogs
+        </Button>
+
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={() => navigate(`/blogs/${userId}`)}
+        >
+          <Globe className="w-4 h-4 mr-2" />
+          View Existing Blogs
+        </Button>
+
         {linksCount > 0 && (
           <Button
             variant="outline"
             className="w-full justify-start"
-            onClick={() => (window.location.href = "/link")}
+            onClick={() => navigate("/Link")}
           >
             <Settings className="w-4 h-4 mr-2" />
             Manage Links

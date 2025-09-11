@@ -12,7 +12,6 @@ export interface CustomizationSettings {
   font: string;
   animation: string;
   backgroundPattern: string;
-  darkMode: boolean;
   animationSpeed: number;
 }
 
@@ -31,7 +30,6 @@ const defaultSettings: CustomizationSettings = {
   font: "inter",
   animation: "fade",
   backgroundPattern: "none",
-  darkMode: false,
   animationSpeed: 0.5,
 };
 
@@ -192,12 +190,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   const applyTheme = () => {
-    if (settings.darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-
     document.documentElement.classList.remove(
       "theme-minimal",
       "theme-elegant",

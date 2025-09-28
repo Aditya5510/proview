@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navbar } from "@/component/Navbar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 const BlogDetail: React.FC = () => {
   const { blogId } = useParams();
@@ -88,8 +89,50 @@ const BlogDetail: React.FC = () => {
             {blog.content && (
               <Card className="shadow-lg border-0 bg-card/50 backdrop-blur">
                 <CardContent className="p-8 md:p-12">
-                  <div className="prose prose-lg md:prose-xl max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:leading-relaxed prose-img:rounded-lg prose-img:shadow-md">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <div
+                    className="prose prose-lg md:prose-xl max-w-none dark:prose-invert 
+                    prose-headings:font-bold prose-headings:tracking-tight 
+                    prose-p:leading-relaxed prose-p:mb-8 prose-p:mt-6
+                    prose-h1:mb-10 prose-h1:mt-16 prose-h1:text-5xl prose-h1:leading-tight
+                    prose-h2:mb-8 prose-h2:mt-12 prose-h2:text-4xl prose-h2:leading-tight
+                    prose-h3:mb-6 prose-h3:mt-10 prose-h3:text-3xl prose-h3:leading-tight
+                    prose-h4:mb-4 prose-h4:mt-8 prose-h4:text-2xl prose-h4:leading-tight
+                    prose-h5:mb-3 prose-h5:mt-6 prose-h5:text-xl prose-h5:leading-tight
+                    prose-h6:mb-2 prose-h6:mt-4 prose-h6:text-lg prose-h6:leading-tight
+                    prose-ul:mb-8 prose-ul:mt-6 prose-li:mb-3 prose-li:leading-relaxed
+                    prose-ol:mb-8 prose-ol:mt-6 prose-li:mb-3 prose-li:leading-relaxed
+                    prose-blockquote:mb-8 prose-blockquote:mt-6 prose-blockquote:pl-8 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:italic
+                    prose-code:bg-muted prose-code:px-3 prose-code:py-2 prose-code:rounded prose-code:text-sm
+                    prose-pre:bg-muted prose-pre:p-6 prose-pre:rounded-lg prose-pre:mb-8 prose-pre:mt-6
+                    prose-img:rounded-lg prose-img:shadow-md prose-img:mb-8 prose-img:mt-6
+                    prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-700 hover:prose-a:decoration-2
+                    dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300
+                    prose-strong:font-semibold prose-strong:text-foreground
+                    prose-em:italic prose-em:text-foreground
+                    prose-hr:my-8 prose-hr:border-border
+                    [&_div[style*='border-left']]:my-8 [&_div[style*='border-left']]:pl-8 [&_div[style*='border-left']]:border-l-4 [&_div[style*='border-left']]:rounded-l-sm"
+                  >
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        div: ({ style, children, ...props }) => {
+                          // Check if this is a side color bar div
+                          if (style && style.borderLeft && style.paddingLeft) {
+                            return (
+                              <div
+                                style={style}
+                                className="my-8 pl-8 border-l-4 rounded-l-sm"
+                                {...props}
+                              >
+                                {children}
+                              </div>
+                            );
+                          }
+                          return <div {...props}>{children}</div>;
+                        },
+                      }}
+                    >
                       {blog.content}
                     </ReactMarkdown>
                   </div>

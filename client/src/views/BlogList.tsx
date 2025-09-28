@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 const BlogList: React.FC = () => {
   const { id } = useParams();
@@ -102,8 +103,44 @@ const BlogList: React.FC = () => {
 
               <CardContent className="space-y-4">
                 {b.content && (
-                  <div className="prose prose-sm max-w-none dark:prose-invert">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <div
+                    className="prose prose-sm max-w-none dark:prose-invert 
+                    prose-p:leading-relaxed prose-p:mb-4 prose-p:mt-3
+                    prose-headings:font-bold prose-headings:tracking-tight
+                    prose-h1:text-xl prose-h1:mb-4 prose-h1:mt-3
+                    prose-h2:text-lg prose-h2:mb-3 prose-h2:mt-3
+                    prose-h3:text-base prose-h3:mb-2 prose-h3:mt-2
+                    prose-ul:mb-4 prose-ul:mt-3 prose-li:mb-2
+                    prose-ol:mb-4 prose-ol:mt-3 prose-li:mb-2
+                    prose-blockquote:mb-4 prose-blockquote:mt-3 prose-blockquote:pl-5 prose-blockquote:border-l-3 prose-blockquote:border-primary prose-blockquote:italic
+                    prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-xs
+                    prose-strong:font-semibold prose-strong:text-foreground
+                    prose-em:italic prose-em:text-foreground
+                    prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-700 hover:prose-a:decoration-2
+                    dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300
+                    [&_div[style*='border-left']]:my-3 [&_div[style*='border-left']]:pl-4 [&_div[style*='border-left']]:border-l-3 [&_div[style*='border-left']]:rounded-l-sm"
+                  >
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        div: ({ style, children, ...props }) => {
+                          // Check if this is a side color bar div
+                          if (style && style.borderLeft && style.paddingLeft) {
+                            return (
+                              <div
+                                style={style}
+                                className="my-3 pl-4 border-l-3 rounded-l-sm"
+                                {...props}
+                              >
+                                {children}
+                              </div>
+                            );
+                          }
+                          return <div {...props}>{children}</div>;
+                        },
+                      }}
+                    >
                       {b.content.length > 120
                         ? b.content.substring(0, 120) + "..."
                         : b.content}

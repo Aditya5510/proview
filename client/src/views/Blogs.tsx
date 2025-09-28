@@ -52,6 +52,9 @@ import {
   FileText,
   Sparkles,
   Palette,
+  Upload,
+  X,
+  Image as ImageLucide,
 } from "lucide-react";
 
 interface BlogForm {
@@ -68,6 +71,9 @@ const Blogs: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState<string[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [form, setForm] = useState<BlogForm>({
@@ -99,6 +105,125 @@ const Blogs: React.FC = () => {
     if (file) {
       setSelectedImage(file);
     }
+  };
+
+  const uploadImageToImgBB = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("key", import.meta.env.VITE_IMGBB_API_KEY);
+    formData.append("image", file);
+
+    const response = await fetch("https://api.imgbb.com/1/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (data?.status === 200) {
+      return data.data.url;
+    } else {
+      throw new Error("Failed to upload image");
+    }
+  };
+
+  const insertImageAtCursor = (imageUrl: string, altText: string = "Image") => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = form.content.substring(start, end);
+
+    const imageMarkdown = `![${altText}](${imageUrl})`;
+    const newContent =
+      form.content.substring(0, start) +
+      imageMarkdown +
+      form.content.substring(end);
+
+    setForm((prev) => ({ ...prev, content: newContent }));
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start + imageMarkdown.length,
+        start + imageMarkdown.length
+      );
+    }, 0);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files).filter((file) =>
+      file.type.startsWith("image/")
+    );
+
+    if (files.length === 0) {
+      toast.error("Please drop image files only");
+      return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const tempId = `temp-${Date.now()}-${i}`;
+
+      setUploadingImages((prev) => [...prev, tempId]);
+
+      try {
+        const imageUrl = await uploadImageToImgBB(file);
+        setUploadedImages((prev) => [...prev, imageUrl]);
+
+        const altText = file.name.split(".")[0];
+        insertImageAtCursor(imageUrl, altText);
+
+        toast.success(`Image ${i + 1} uploaded successfully!`);
+      } catch (error) {
+        toast.error(`Failed to upload image ${i + 1}`);
+        console.error("Error uploading image:", error);
+      } finally {
+        setUploadingImages((prev) => prev.filter((id) => id !== tempId));
+      }
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+
+    if (files.length === 0) return;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const tempId = `temp-${Date.now()}-${i}`;
+
+      setUploadingImages((prev) => [...prev, tempId]);
+
+      try {
+        const imageUrl = await uploadImageToImgBB(file);
+        setUploadedImages((prev) => [...prev, imageUrl]);
+
+        const altText = file.name.split(".")[0];
+        insertImageAtCursor(imageUrl, altText);
+
+        toast.success(`Image ${i + 1} uploaded successfully!`);
+      } catch (error) {
+        toast.error(`Failed to upload image ${i + 1}`);
+        console.error("Error uploading image:", error);
+      } finally {
+        setUploadingImages((prev) => prev.filter((id) => id !== tempId));
+      }
+    }
+
+    e.target.value = "";
   };
 
   const insertMarkdown = (prefix: string, suffix: string) => {
@@ -174,6 +299,31 @@ const Blogs: React.FC = () => {
     }, 0);
   };
 
+  const insertImageFromUrl = (imageUrl: string, altText: string = "Image") => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = form.content.substring(start, end);
+
+    const imageMarkdown = `![${altText}](${imageUrl})`;
+    const newContent =
+      form.content.substring(0, start) +
+      imageMarkdown +
+      form.content.substring(end);
+
+    setForm((prev) => ({ ...prev, content: newContent }));
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start + imageMarkdown.length,
+        start + imageMarkdown.length
+      );
+    }, 0);
+  };
+
   const insertLinkPlaceholder = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -221,7 +371,7 @@ const Blogs: React.FC = () => {
     }, 0);
   };
 
-  const insertBackgroundColor = () => {
+  const insertSideColor = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -230,8 +380,8 @@ const Blogs: React.FC = () => {
     const selectedText = form.content.substring(start, end);
 
     if (selectedText) {
-      // Wrap selected text with background color
-      const newText = `<span style="background-color: ${backgroundColor}; padding:10px; border-radius: 4px;">${selectedText}</span>`;
+      // Wrap selected text with side color bar
+      const newText = `<div style="border-left: 4px solid ${backgroundColor}; padding-left: 12px; margin: 8px 0;">${selectedText}</div>`;
       const newContent =
         form.content.substring(0, start) +
         newText +
@@ -247,8 +397,8 @@ const Blogs: React.FC = () => {
         );
       }, 0);
     } else {
-      // Insert a placeholder with background color
-      const newText = `<span style="background-color: ${backgroundColor}; padding:10px; border-radius: 4px;">Highlighted text</span>`;
+      // Insert a placeholder with side color bar
+      const newText = `<div style="border-left: 4px solid ${backgroundColor}; padding-left: 12px; margin: 8px 0;">Highlighted text</div>`;
       const newContent =
         form.content.substring(0, start) +
         newText +
@@ -284,20 +434,11 @@ const Blogs: React.FC = () => {
       let imageUrl = "";
 
       if (selectedImage) {
-        const formData = new FormData();
-        formData.append("image", selectedImage);
-
-        const response = await fetch(
-          "https://api.imgbb.com/1/upload?key=YOUR_IMGBB_API_KEY",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        const data = await response.json();
-        if (data.success) {
-          imageUrl = data.data.url;
+        try {
+          imageUrl = await uploadImageToImgBB(selectedImage);
+        } catch (error) {
+          toast.error("Failed to upload cover image");
+          console.error("Error uploading cover image:", error);
         }
       }
 
@@ -313,6 +454,7 @@ const Blogs: React.FC = () => {
         toast.success("Blog created successfully!");
         setForm({ title: "", content: "", image: "", videoUrl: "" });
         setSelectedImage(null);
+        setUploadedImages([]);
         fetchMyBlogs();
       } else {
         toast.error(res.error || "Failed to create blog");
@@ -349,13 +491,13 @@ const Blogs: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-1 sm:px-4 lg:px-8 py-2 sm:py-8 max-w-7xl">
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 sm:gap-8">
           {/* Main Editor */}
           <div className="xl:col-span-3 col-span-1">
             <Card className="shadow-lg border">
-              <CardHeader className="pb-2 sm:pb-6 bg-primary text-primary-foreground rounded-t-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+              <CardHeader className="pb-4 sm:pb-6 bg-primary text-primary-foreground rounded-t-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                   <div>
                     <CardTitle className="text-xl sm:text-3xl font-bold flex items-center gap-2">
                       <Sparkles className="w-5 h-5 sm:w-8 sm:h-8" />
@@ -375,10 +517,10 @@ const Blogs: React.FC = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-2 sm:p-6 lg:p-8">
-                <form onSubmit={submitBlog} className="space-y-4 sm:space-y-8">
+              <CardContent className="p-4 sm:p-6 lg:p-8">
+                <form onSubmit={submitBlog} className="space-y-6 sm:space-y-8">
                   {/* Title */}
-                  <div className="space-y-2 sm:space-y-3">
+                  <div className="space-y-3 sm:space-y-4">
                     <Label
                       htmlFor="title"
                       className="text-sm sm:text-lg font-semibold text-foreground flex items-center gap-2"
@@ -394,13 +536,13 @@ const Blogs: React.FC = () => {
                         setForm((p) => ({ ...p, title: e.target.value }))
                       }
                       placeholder="What's your story about?"
-                      className="text-base sm:text-xl h-10 sm:h-14 border-2 focus:border-primary rounded-lg sm:rounded-xl px-3 sm:px-4 font-medium"
+                      className="text-base sm:text-xl h-12 sm:h-14 border-2 focus:border-primary rounded-lg sm:rounded-xl px-4 sm:px-5 font-medium"
                       required
                     />
                   </div>
 
                   {/* Simple Editor */}
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     <div className="flex items-center justify-between">
                       <Label className="text-sm sm:text-lg font-semibold text-foreground flex items-center gap-2">
                         <Edit3 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -413,7 +555,7 @@ const Blogs: React.FC = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => setShowPreview(!showPreview)}
-                          className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3"
+                          className="flex items-center gap-1 text-xs sm:text-sm px-3 sm:px-4 py-2"
                         >
                           <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span className="hidden sm:inline">
@@ -427,15 +569,15 @@ const Blogs: React.FC = () => {
                     </div>
 
                     {!showPreview ? (
-                      <div className="space-y-4">
+                      <div className="space-y-5">
                         {/* Formatting Toolbar */}
-                        <div className="flex flex-wrap gap-1 sm:gap-2 p-1 sm:p-3 bg-muted rounded-lg">
+                        <div className="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-muted rounded-lg">
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("**", "**")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Bold"
                           >
                             <Bold className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -445,7 +587,7 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("*", "*")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Italic"
                           >
                             <Italic className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -455,7 +597,7 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("`", "`")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Inline Code"
                           >
                             <Code className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -465,7 +607,7 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={insertLinkPlaceholder}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Add Link"
                           >
                             <Link2 className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -475,7 +617,7 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={insertCodeBlockPlaceholder}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Add Code Block"
                           >
                             <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -485,7 +627,7 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={insertImagePlaceholder}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Add Image"
                           >
                             <ImageIcon className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -495,42 +637,42 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={insertVideoPlaceholder}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Add Video (supports YouTube URLs)"
                           >
                             <Video className="w-3 h-3 sm:w-4 sm:h-4" />
                           </Button>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-2">
                             <input
                               type="color"
                               value={backgroundColor}
                               onChange={(e) =>
                                 setBackgroundColor(e.target.value)
                               }
-                              className="w-6 h-6 sm:w-8 sm:h-8 rounded border border-border cursor-pointer"
-                              title="Choose background color"
+                              className="w-8 h-8 sm:w-9 sm:h-9 rounded border border-border cursor-pointer"
+                              title="Choose side color"
                             />
                             <Button
                               type="button"
                               variant="outline"
                               size="sm"
-                              onClick={insertBackgroundColor}
-                              className="h-6 sm:h-8 px-1 sm:px-3"
-                              title="Apply background color"
+                              onClick={insertSideColor}
+                              className="h-8 sm:h-9 px-2 sm:px-3"
+                              title="Apply side color bar"
                             >
                               <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                           </div>
                           <Separator
                             orientation="vertical"
-                            className="h-6 sm:h-8 hidden sm:block"
+                            className="h-8 sm:h-9 hidden sm:block"
                           />
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("# ", "")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Heading 1"
                           >
                             <Heading1 className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -540,7 +682,7 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("## ", "")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Heading 2"
                           >
                             <Heading2 className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -550,21 +692,21 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("### ", "")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Heading 3"
                           >
                             <Heading3 className="w-3 h-3 sm:w-4 sm:h-4" />
                           </Button>
                           <Separator
                             orientation="vertical"
-                            className="h-6 sm:h-8 hidden sm:block"
+                            className="h-8 sm:h-9 hidden sm:block"
                           />
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("- ", "")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Bullet List"
                           >
                             <List className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -574,7 +716,7 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("1. ", "")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Numbered List"
                           >
                             <ListOrdered className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -584,36 +726,121 @@ const Blogs: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => insertMarkdown("> ", "")}
-                            className="h-6 sm:h-8 px-1 sm:px-3"
+                            className="h-8 sm:h-9 px-2 sm:px-3"
                             title="Quote"
                           >
                             <Quote className="w-3 h-3 sm:w-4 sm:h-4" />
                           </Button>
                         </div>
 
-                        {/* Main Textarea */}
-                        <Textarea
-                          value={form.content}
-                          onChange={(e) =>
-                            setForm((p) => ({ ...p, content: e.target.value }))
-                          }
-                          placeholder="Start writing your blog post here...
+                        {/* Main Textarea with Drag and Drop */}
+                        <div
+                          className={`relative min-h-[450px] sm:min-h-[550px] border-2 rounded-lg sm:rounded-xl transition-colors ${
+                            isDragOver
+                              ? "border-primary bg-primary/5"
+                              : "border-border focus-within:border-primary"
+                          }`}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                        >
+                          <Textarea
+                            value={form.content}
+                            onChange={(e) =>
+                              setForm((p) => ({
+                                ...p,
+                                content: e.target.value,
+                              }))
+                            }
+                            placeholder="Start writing your blog post here...
 
 Writing Tips:
 - Use the toolbar buttons for easy formatting
+- Drag and drop images directly into this area
 - Click 'Add Video' and paste your YouTube URL
 - Click 'Add Image' and paste your image URL
 - Click 'Add Link' to create clickable links
-- Select text and use color picker for highlights"
-                          className="min-h-[400px] sm:min-h-[500px] text-base sm:text-base leading-relaxed resize-none border-2 focus:border-primary rounded-lg sm:rounded-xl p-3 sm:p-4"
-                          ref={textareaRef}
-                        />
+- Select text and use color picker for side bars"
+                            className="min-h-[450px] sm:min-h-[550px] text-base sm:text-base leading-relaxed resize-none border-0 focus:border-0 focus:ring-0 p-4 sm:p-6 bg-transparent"
+                            ref={textareaRef}
+                          />
+
+                          {/* Drag and Drop Overlay */}
+                          {isDragOver && (
+                            <div className="absolute inset-0 bg-primary/10 border-2 border-dashed border-primary rounded-lg sm:rounded-xl flex items-center justify-center">
+                              <div className="text-center">
+                                <Upload className="w-12 h-12 mx-auto mb-2 text-primary" />
+                                <p className="text-primary font-medium">
+                                  Drop images here to upload
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Upload Progress Indicator */}
+                          {uploadingImages.length > 0 && (
+                            <div className="absolute top-2 right-2 bg-background/90 backdrop-blur-sm rounded-lg p-2 border">
+                              <div className="flex items-center gap-2 text-sm">
+                                <BiLoaderAlt className="w-4 h-4 animate-spin" />
+                                <span>
+                                  Uploading {uploadingImages.length} image(s)...
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
 
                         {/* Quick Tips */}
+                        <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                          <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            Pro Tips for Image Upload
+                          </h4>
+                          <ul className="text-xs text-muted-foreground space-y-1">
+                            <li>
+                              • Drag and drop images directly into the editor
+                              above
+                            </li>
+                            <li>
+                              • Use the file input below to select multiple
+                              images at once
+                            </li>
+                            <li>
+                              • Click on uploaded images to insert them into
+                              your content
+                            </li>
+                            <li>
+                              • Images are automatically uploaded to ImgBB and
+                              inserted as markdown
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                     ) : (
-                      <div className="border rounded-lg sm:rounded-xl p-3 sm:p-6 min-h-[400px] sm:min-h-[500px] bg-card">
-                        <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert prose-img:rounded-lg prose-img:shadow-md prose-img:max-w-full prose-img:h-auto">
+                      <div className="border rounded-lg sm:rounded-xl p-4 sm:p-6 min-h-[450px] sm:min-h-[550px] bg-card">
+                        <div
+                          className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert 
+                          prose-p:leading-relaxed prose-p:mb-6 prose-p:mt-4
+                          prose-headings:font-bold prose-headings:tracking-tight
+                          prose-h1:text-3xl prose-h1:mb-8 prose-h1:mt-12 prose-h1:leading-tight
+                          prose-h2:text-2xl prose-h2:mb-6 prose-h2:mt-10 prose-h2:leading-tight
+                          prose-h3:text-xl prose-h3:mb-4 prose-h3:mt-8 prose-h3:leading-tight
+                          prose-h4:text-lg prose-h4:mb-3 prose-h4:mt-6 prose-h4:leading-tight
+                          prose-h5:text-base prose-h5:mb-2 prose-h5:mt-4 prose-h5:leading-tight
+                          prose-h6:text-sm prose-h6:mb-2 prose-h6:mt-3 prose-h6:leading-tight
+                          prose-ul:mb-6 prose-ul:mt-4 prose-li:mb-2 prose-li:leading-relaxed
+                          prose-ol:mb-6 prose-ol:mt-4 prose-li:mb-2 prose-li:leading-relaxed
+                          prose-blockquote:mb-6 prose-blockquote:mt-4 prose-blockquote:pl-6 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:italic
+                          prose-code:bg-muted prose-code:px-3 prose-code:py-1.5 prose-code:rounded prose-code:text-sm
+                          prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-lg prose-pre:mb-6 prose-pre:mt-4
+                          prose-img:rounded-lg prose-img:shadow-md prose-img:max-w-full prose-img:h-auto prose-img:mb-6 prose-img:mt-4
+                          prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-700 hover:prose-a:decoration-2
+                          dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300
+                          prose-strong:font-semibold prose-strong:text-foreground
+                          prose-em:italic prose-em:text-foreground
+                          prose-hr:my-6 prose-hr:border-border
+                          [&_div[style*='border-left']]:my-6 [&_div[style*='border-left']]:pl-6 [&_div[style*='border-left']]:border-l-4 [&_div[style*='border-left']]:rounded-l-sm"
+                        >
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeRaw]}
@@ -771,10 +998,27 @@ Writing Tips:
 
                                 return <p {...props}>{children}</p>;
                               },
-                              // Handle div elements for YouTube URLs
-                              div: ({ children, ...props }) => {
-                                const childrenStr = children?.toString() || "";
+                              // Handle div elements for YouTube URLs and side color bars
+                              div: ({ style, children, ...props }) => {
+                                // Check if this is a side color bar div
+                                if (
+                                  style &&
+                                  style.borderLeft &&
+                                  style.paddingLeft
+                                ) {
+                                  return (
+                                    <div
+                                      style={style}
+                                      className="my-6 pl-6 border-l-4 rounded-l-sm"
+                                      {...props}
+                                    >
+                                      {children}
+                                    </div>
+                                  );
+                                }
 
+                                // Check if this div contains a YouTube URL
+                                const childrenStr = children?.toString() || "";
                                 const youtubeRegex =
                                   /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
                                 const youtubeMatch =
@@ -811,7 +1055,7 @@ Writing Tips:
                   </div>
 
                   {/* Cover Image */}
-                  <div className="space-y-2 sm:space-y-3">
+                  <div className="space-y-3 sm:space-y-4">
                     <Label className="text-sm sm:text-lg font-semibold text-foreground flex items-center gap-2">
                       <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span className="hidden sm:inline">
@@ -823,21 +1067,100 @@ Writing Tips:
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
-                      className="h-9 sm:h-12 border-2 focus:border-primary rounded-lg sm:rounded-xl px-2 sm:px-4 text-xs sm:text-base"
+                      className="h-10 sm:h-12 border-2 focus:border-primary rounded-lg sm:rounded-xl px-3 sm:px-4 text-sm sm:text-base"
                     />
                   </div>
 
+                  {/* Multiple Image Upload */}
+                  <div className="space-y-3 sm:space-y-4">
+                    <Label className="text-sm sm:text-lg font-semibold text-foreground flex items-center gap-2">
+                      <ImageLucide className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="hidden sm:inline">
+                        Upload Multiple Images
+                      </span>
+                      <span className="sm:hidden">Images</span>
+                    </Label>
+                    <div className="flex items-center gap-3">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleFileSelect}
+                        className="h-10 sm:h-12 border-2 focus:border-primary rounded-lg sm:rounded-xl px-3 sm:px-4 text-sm sm:text-base flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const fileInput = document.querySelector(
+                            'input[type="file"][multiple]'
+                          ) as HTMLInputElement;
+                          fileInput?.click();
+                        }}
+                        className="h-10 sm:h-12 px-4 sm:px-5"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">Select</span>
+                      </Button>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      You can also drag and drop images directly into the editor
+                      above
+                    </p>
+                  </div>
+
+                  {/* Uploaded Images Preview */}
+                  {uploadedImages.length > 0 && (
+                    <div className="space-y-3 sm:space-y-4">
+                      <Label className="text-sm sm:text-lg font-semibold text-foreground flex items-center gap-2">
+                        <ImageLucide className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span>Uploaded Images ({uploadedImages.length})</span>
+                      </Label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                        {uploadedImages.map((url, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={url}
+                              alt={`Uploaded image ${index + 1}`}
+                              className="w-full h-24 sm:h-28 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity shadow-sm"
+                              onClick={() => {
+                                insertImageFromUrl(url, `Image ${index + 1}`);
+                                toast.success("Image inserted into editor");
+                              }}
+                              title="Click to insert into editor"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute -top-2 -right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => {
+                                setUploadedImages((prev) =>
+                                  prev.filter((_, i) => i !== index)
+                                );
+                                toast.success("Image removed from list");
+                              }}
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Submit Button */}
-                  <div className="flex justify-end pt-3 sm:pt-6 border-t">
+                  <div className="flex justify-end pt-4 sm:pt-6 border-t border-border/50">
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 sm:px-8 py-2 sm:py-3 text-sm sm:text-lg font-semibold rounded-lg sm:rounded-xl shadow-lg w-full sm:w-auto"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg font-semibold rounded-lg sm:rounded-xl shadow-lg w-full sm:w-auto min-h-[48px]"
                     >
                       {loading ? (
-                        <BiLoaderAlt className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 animate-spin" />
+                        <BiLoaderAlt className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
                       ) : (
-                        <Save className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                        <Save className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       )}
                       <span className="hidden sm:inline">
                         {loading ? "Publishing..." : "Publish Blog"}
@@ -854,8 +1177,8 @@ Writing Tips:
 
           {/* Sidebar - My Blogs */}
           <div className="xl:col-span-1 hidden xl:block">
-            <Card className="shadow-lg border sticky top-4 sm:top-8">
-              <CardHeader className="pb-3 sm:pb-4">
+            <Card className="shadow-lg border sticky top-6 sm:top-8">
+              <CardHeader className="pb-4 sm:pb-6">
                 <CardTitle className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
                   <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
                   My Blogs
@@ -864,10 +1187,10 @@ Writing Tips:
                   {blogs.length} blog{blogs.length !== 1 ? "s" : ""} published
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6">
+              <CardContent className="space-y-4 sm:space-y-5 p-4 sm:p-6">
                 {blogs.length === 0 ? (
                   <div className="text-center py-8">
-                    <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+                    <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                     <p className="text-muted-foreground text-sm">
                       No blogs yet. Create your first one!
                     </p>
@@ -876,9 +1199,9 @@ Writing Tips:
                   blogs.map((b) => (
                     <Card
                       key={b._id}
-                      className="p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer border"
+                      className="p-4 sm:p-5 hover:shadow-md transition-shadow cursor-pointer border hover:border-primary/20"
                     >
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <h3 className="font-semibold text-foreground line-clamp-2 text-sm sm:text-base">
                           {b.title}
                         </h3>
@@ -897,7 +1220,7 @@ Writing Tips:
                           )}
                         </CardDescription>
                         <div className="flex items-center justify-between pt-2">
-                          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground">
+                          <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground">
                             <div className="flex items-center gap-1">
                               <Eye className="w-3 h-3" />
                               <span>{b.views || 0}</span>
@@ -914,7 +1237,7 @@ Writing Tips:
                               onClick={() =>
                                 window.open(`/share-blog/${b._id}`, "_blank")
                               }
-                              className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                              className="h-8 w-8 p-0 hover:bg-primary/10"
                             >
                               <ExternalLink className="w-3 h-3" />
                             </Button>
@@ -923,7 +1246,7 @@ Writing Tips:
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-destructive hover:text-destructive"
+                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                                 >
                                   <Trash2 className="w-3 h-3" />
                                 </Button>

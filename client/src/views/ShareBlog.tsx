@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 const ShareBlog: React.FC = () => {
   const { blogId } = useParams<{ blogId: string }>();
@@ -200,7 +201,14 @@ const ShareBlog: React.FC = () => {
             <div className="flex items-center gap-6 text-muted-foreground mb-8">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4" />
-                <span>{blog?.user?.name?.split(" ")[0] || "Author"}</span>
+                <span>
+                  {blog?.user?.username ||
+                    blog?.user?.name ||
+                    blog?.author?.username ||
+                    blog?.author?.name ||
+                    blog?.author ||
+                    "Author"}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
@@ -231,8 +239,53 @@ const ShareBlog: React.FC = () => {
           )}
 
           {/* Content */}
-          <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-code:text-foreground prose-pre:bg-muted prose-pre:text-foreground prose-blockquote:text-muted-foreground prose-blockquote:border-primary prose-a:text-primary hover:prose-a:text-primary/80 prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-relaxed prose-p:mb-6 prose-ul:mb-6 prose-ol:mb-6 prose-li:mb-2">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <div
+            className="prose prose-lg max-w-none dark:prose-invert 
+            prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground 
+            prose-code:text-foreground prose-pre:bg-muted prose-pre:text-foreground 
+            prose-blockquote:text-muted-foreground prose-blockquote:border-primary 
+            prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-700 hover:prose-a:decoration-2
+            dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300 
+            prose-headings:font-bold prose-headings:tracking-tight
+            prose-h1:text-5xl prose-h1:mb-10 prose-h1:mt-16 prose-h1:leading-tight
+            prose-h2:text-4xl prose-h2:mb-8 prose-h2:mt-12 prose-h2:leading-tight
+            prose-h3:text-3xl prose-h3:mb-6 prose-h3:mt-10 prose-h3:leading-tight
+            prose-h4:text-2xl prose-h4:mb-4 prose-h4:mt-8 prose-h4:leading-tight
+            prose-h5:text-xl prose-h5:mb-3 prose-h5:mt-6 prose-h5:leading-tight
+            prose-h6:text-lg prose-h6:mb-2 prose-h6:mt-4 prose-h6:leading-tight
+            prose-p:leading-relaxed prose-p:mb-8 prose-p:mt-6
+            prose-ul:mb-8 prose-ul:mt-6 prose-li:mb-3 prose-li:leading-relaxed
+            prose-ol:mb-8 prose-ol:mt-6 prose-li:mb-3 prose-li:leading-relaxed
+            prose-blockquote:mb-8 prose-blockquote:mt-6 prose-blockquote:pl-8 prose-blockquote:border-l-4 prose-blockquote:italic
+            prose-code:bg-muted prose-code:px-3 prose-code:py-2 prose-code:rounded prose-code:text-sm
+            prose-pre:bg-muted prose-pre:p-6 prose-pre:rounded-lg prose-pre:mb-8 prose-pre:mt-6
+            prose-img:rounded-lg prose-img:shadow-md prose-img:mb-8 prose-img:mt-6
+            prose-strong:font-semibold prose-strong:text-foreground
+            prose-em:italic prose-em:text-foreground
+            prose-hr:my-8 prose-hr:border-border
+            [&_div[style*='border-left']]:my-8 [&_div[style*='border-left']]:pl-8 [&_div[style*='border-left']]:border-l-4 [&_div[style*='border-left']]:rounded-l-sm"
+          >
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                div: ({ style, children, ...props }) => {
+                  // Check if this is a side color bar div
+                  if (style && style.borderLeft && style.paddingLeft) {
+                    return (
+                      <div
+                        style={style}
+                        className="my-8 pl-8 border-l-4 rounded-l-sm"
+                        {...props}
+                      >
+                        {children}
+                      </div>
+                    );
+                  }
+                  return <div {...props}>{children}</div>;
+                },
+              }}
+            >
               {blog.content}
             </ReactMarkdown>
           </div>

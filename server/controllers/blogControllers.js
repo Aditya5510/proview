@@ -27,7 +27,7 @@ const getMyBlogs = async (req, res) => {
   try {
     const userId = req.user.userId;
     const blogs = await Blog.find({ user: userId })
-      .populate("user", "name email profile")
+      .populate("user", "username email profile")
       .sort({ createdAt: -1 })
       .lean();
     return res.json({ success: true, blogs });
@@ -58,7 +58,7 @@ const getUserRecentBlogs = async (req, res) => {
   try {
     const { userId } = req.params;
     const blogs = await Blog.find({ user: userId })
-      .populate("user", "name email profile")
+      .populate("user", "username email profile")
       .sort({ createdAt: -1 })
       .limit(2)
       .lean();
@@ -72,7 +72,7 @@ const getUserAllBlogs = async (req, res) => {
   try {
     const { userId } = req.params;
     const blogs = await Blog.find({ user: userId })
-      .populate("user", "name email profile")
+      .populate("user", "username email profile")
       .sort({ createdAt: -1 })
       .lean();
     return res.json({ success: true, blogs });
@@ -87,7 +87,7 @@ const getBlogById = async (req, res) => {
     const userId = req.user?.userId; // Optional - for authenticated users
 
     const blog = await Blog.findById(blogId)
-      .populate("user", "name email profile")
+      .populate("user", "username email profile")
       .lean();
     if (!blog) return res.status(404).json({ error: "Blog not found" });
 
